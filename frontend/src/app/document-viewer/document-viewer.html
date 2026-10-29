@@ -1,16 +1,185 @@
-<h2>Document preview</h2>
 @if (status() === 'completed') {
-  <p>{{ detections().length }} checkboxes · {{ checkedCount() }} checked</p>
+  <div class="detection-stats">
+    <div class="stat-item">
+      <span class="stat-label">Detected</span>
+      <span class="stat-value">{{ totalDetections() }}</span>
+    </div>
+
+    <div class="stat-item stat-item--checked">
+      <span class="stat-label">Checked</span>
+      <span class="stat-value">{{ totalCheckedDetections() }}</span>
+    </div>
+
+    <div class="stat-item stat-item--unchecked">
+      <span class="stat-label">Unchecked</span>
+      <span class="stat-value">{{ totalUncheckedDetections() }}</span>
+    </div>
+  </div>
+} @else {
+  <h2>Document preview</h2>
 }
-<div class="preview">
-  <img [src]="imageUrl()" alt="Document preview" (load)="onImageLoad($event)" />
-  @if (status() === 'completed' && imageWidth() > 0 && imageHeight() > 0) {
-    <svg [attr.viewBox]="'0 0 ' + imageWidth() + ' ' + imageHeight()">
-      @for (box of detections(); track $index) {
-        <rect [attr.x]="box.bbox[0]" [attr.y]="box.bbox[1]"
-          [attr.width]="box.bbox[2] - box.bbox[0]" [attr.height]="box.bbox[3] - box.bbox[1]"
-          [attr.stroke]="box.is_checked ? '#16a34a' : '#ef4444'" stroke-width="4" fill="none" />
-      }
-    </svg>
+<div class="viewer-toolbar">
+  <div class="zoom-controls">
+    <button
+      type="button"
+      (click)="zoomOut()"
+      [disabled]="zoom() <= minZoom"
+      aria-label="Zoom out"
+    >
+      −
+    </button>
+
+    <span class="zoom-value">
+      {{ zoomPercentage() }}%
+    </span>
+
+    <button
+      type="button"
+      (click)="zoomIn()"
+      [disabled]="zoom() >= maxZoom"
+      aria-label="Zoom in"
+    >
+      +
+    </button>
+
+    <button
+      type="button"
+      (click)="resetZoom()"
+      title="Fit image to viewer"
+    >
+      Fit
+    </button>
+  </div>
+  @if (status() === 'completed') {
+    <button
+      type="button"
+      (click)="toggleBoundingBoxes()"
+      [attr.aria-pressed]="showBoundingBoxes()"
+    >
+      {{ showBoundingBoxes() ? 'Hide annotations' : 'Show annotations' }}
+    </button>
+  }
+</div>
+<div class="results-layout" [class.preview-only]="status() !== 'completed'"
+>
+<div class="document-canvas">
+  <div
+    class="image-stage"
+    #imageStage
+    (wheel)="onImageWheel($event)"
+  >
+    <div class="image-scroll-content">
+      <div
+        class="image-wrapper"
+        #imageWrapper
+        [style.width.px]="displayWidth()"
+        [style.height.px]="displayHeight()"
+      >
+        <img
+          [src]="imageUrl()"
+          alt="Document preview"
+          (load)="onImageLoad($event)"
+        />
+
+        @if (
+          status() === 'completed' &&
+          showBoundingBoxes() &&
+          imageWidth() > 0 &&
+          imageHeight() > 0
+        ) {
+          <svg
+            class="checkbox-overlay"
+            [attr.viewBox]="'0 0 ' + imageWidth() + ' ' + imageHeight()"
+            preserveAspectRatio="none"
+            (click)="clearSelection()"
+          >
+            @for (detection of detections(); track $index) {
+              <rect
+                [attr.x]="detection.bbox[0]"
+                [attr.y]="detection.bbox[1]"
+                [attr.width]="detection.bbox[2] - detection.bbox[0]"
+                [attr.height]="detection.bbox[3] - detection.bbox[1]"
+                fill-opacity="0.2"
+                [attr.stroke]="detection.is_checked ? '#16a34a' : '#ef4444'"
+                [attr.stroke-width]="selectedDetectionIndex() === $index ? 8 : 4"
+                [attr.fill]="selectedDetectionIndex() === $index
+                  ? (detection.is_checked ? '#16a34a' : '#ef4444')
+                  : 'none'"
+                (click)="selectDetection($index); $event.stopPropagation()"
+              />
+            }
+          </svg>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+  @if(status() === 'completed') {
+    <aside class="detections-panel">
+      <h3>Checkboxes ({{ totalDetections() }})</h3>
+
+      <div class="detection-navigation">
+        <span class="detection-counter">
+          @if (selectedDetectionIndex() !== null && showBoundingBoxes()) {
+            Detection {{ selectedDetectionIndex()! + 1 }}
+            of {{ totalDetections() }}
+          } @else {
+            No detection selected
+          }
+        </span>
+
+        <div class="navigation-buttons">
+          <button
+            type="button"
+            [disabled]="totalDetections() === 0 || !showBoundingBoxes()"
+            (click)="previousDetection()"
+          >
+            ← Previous
+          </button>
+
+          <button
+            type="button"
+            [disabled]="totalDetections() === 0 || !showBoundingBoxes()"
+            (click)="nextDetection()"
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+      <div class="detections-list">
+        @for (detection of detections(); track $index) {
+          <button
+            #detectionButton
+            type="button"
+            class="detection-item"
+            [class.selected]="selectedDetectionIndex() === $index && showBoundingBoxes()"
+            [attr.aria-pressed]="selectedDetectionIndex() === $index && showBoundingBoxes()"
+            (click)="selectDetection($index)"
+          >
+            <span class="detection-content">
+              <span>#{{ $index + 1 }}</span>
+
+              @if (selectedDetectionIndex() === $index && showBoundingBoxes()) {
+                <small class="detection-coordinates">
+                  ({{ detection.bbox[0] }}, {{ detection.bbox[1] }})
+                  →
+                  ({{ detection.bbox[2] }}, {{ detection.bbox[3] }})
+                </small>
+              }
+            </span>
+
+            <span
+              [class.checked]="detection.is_checked"
+              [class.unchecked]="!detection.is_checked"
+            >
+              {{ detection.is_checked ? 'Checked' : 'Unchecked' }}
+            </span>
+          </button>
+        } @empty {
+          <p>No checkboxes detected.</p>
+        }
+      </div>
+    </aside>
   }
 </div>
