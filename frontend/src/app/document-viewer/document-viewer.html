@@ -1,0 +1,16 @@
+<h2>Document preview</h2>
+@if (status() === 'completed') {
+  <p>{{ detections().length }} checkboxes · {{ checkedCount() }} checked</p>
+}
+<div class="preview">
+  <img [src]="imageUrl()" alt="Document preview" (load)="onImageLoad($event)" />
+  @if (status() === 'completed' && imageWidth() > 0 && imageHeight() > 0) {
+    <svg [attr.viewBox]="'0 0 ' + imageWidth() + ' ' + imageHeight()">
+      @for (box of detections(); track $index) {
+        <rect [attr.x]="box.bbox[0]" [attr.y]="box.bbox[1]"
+          [attr.width]="box.bbox[2] - box.bbox[0]" [attr.height]="box.bbox[3] - box.bbox[1]"
+          [attr.stroke]="box.is_checked ? '#16a34a' : '#ef4444'" stroke-width="4" fill="none" />
+      }
+    </svg>
+  }
+</div>
