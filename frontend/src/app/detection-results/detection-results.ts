@@ -1,4 +1,13 @@
-import { afterRenderEffect, Component, computed, ElementRef, input, output, signal, viewChildren } from '@angular/core';
+import {
+  afterRenderEffect,
+  Component,
+  computed,
+  ElementRef,
+  input,
+  output,
+  signal,
+  viewChildren,
+} from '@angular/core';
 import { JsonResponse } from '../json-response/json-response';
 import { Detection } from '../models/detection.model';
 
@@ -22,7 +31,8 @@ export class DetectionResults {
   readonly previousRequested = output<void>();
   readonly nextRequested = output<void>();
 
-  private readonly detectionButtons = viewChildren<ElementRef<HTMLButtonElement>>('detectionButton');
+  private readonly detectionButtons =
+    viewChildren<ElementRef<HTMLButtonElement>>('detectionButton');
 
   constructor() {
     afterRenderEffect({

@@ -1,6 +1,5 @@
 @use '../styles/tokens';
 
-
 :host {
   display: block;
   height: 100dvh;
@@ -224,8 +223,6 @@
     transform: translateY(0);
   }
 }
-
-
 
 @media (prefers-reduced-motion: reduce) {
   .toast {

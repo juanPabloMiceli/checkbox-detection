@@ -39,7 +39,12 @@
   padding: 12px;
   overflow: auto;
   color: tokens.$text-secondary;
-  font: 12px / 1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font:
+    12px / 1.7 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
   tab-size: 2;
   scrollbar-width: thin;
   scrollbar-color: tokens.$scrollbar-thumb transparent;
@@ -56,7 +61,16 @@
   min-height: 1.7em;
 }
 
-.key { color: tokens.$primary-hover; }
-.number { color: tokens.$danger-text; }
-.boolean { color: tokens.$success-text; font-weight: 600; }
-.string { color: tokens.$success-text; }
+.key {
+  color: tokens.$primary-hover;
+}
+.number {
+  color: tokens.$danger-text;
+}
+.boolean {
+  color: tokens.$success-text;
+  font-weight: 600;
+}
+.string {
+  color: tokens.$success-text;
+}

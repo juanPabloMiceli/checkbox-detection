@@ -87,7 +87,8 @@
     border-color 0.15s ease;
 }
 
-.document-item:hover, .document-item:focus-within {
+.document-item:hover,
+.document-item:focus-within {
   background: tokens.$surface-subtle;
 }
 
@@ -242,7 +243,6 @@
   @include controls.outlined-button(7px);
   padding: 7px 12px;
 
-
   color: tokens.$text-control;
 
   font-size: 12px;
@@ -263,8 +263,7 @@
   cursor: not-allowed;
 }
 
-.document-item:not(.selected)
-  .document-process-button:not(:disabled) {
+.document-item:not(.selected) .document-process-button:not(:disabled) {
   background: tokens.$surface-subtle;
 }
 
@@ -328,7 +327,6 @@
   color: tokens.$text-subtle;
   font-size: 12px;
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   .document-item,

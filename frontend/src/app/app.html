@@ -1,26 +1,18 @@
 <div class="app-shell">
   <header class="app-header">
     <div class="brand">
-      <img
-        src="/checkbox-logo.svg"
-        class="brand-logo"
-        alt="" aria-hidden="true"
-      />
+      <img src="/checkbox-logo.svg" class="brand-logo" alt="" aria-hidden="true" />
       <span class="brand-name">Checkbox Detection</span>
     </div>
 
-    <span class="header-subtitle">
-      Document workspace
-    </span>
+    <span class="header-subtitle"> Document workspace </span>
   </header>
 
   <main class="workspace">
     <section class="documents-panel">
       <div class="documents-header">
         <h2>Documents</h2>
-        <span class="documents-count">
-          {{ workspace.documents().length }} files
-        </span>
+        <span class="documents-count"> {{ workspace.documents().length }} files </span>
       </div>
       <app-upload-area (filesAdded)="addFiles($event)" />
 
@@ -32,7 +24,6 @@
         (documentRemoved)="workspace.removeDocument($event)"
         (processAll)="workspace.processAll()"
       />
-
     </section>
 
     <section class="viewer-panel">

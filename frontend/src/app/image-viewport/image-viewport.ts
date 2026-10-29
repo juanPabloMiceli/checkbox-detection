@@ -1,6 +1,19 @@
-import { Component, output, signal, computed, input, effect, ElementRef, afterRenderEffect, viewChild, afterNextRender, DestroyRef, inject } from '@angular/core';
+import {
+  Component,
+  output,
+  signal,
+  computed,
+  input,
+  effect,
+  ElementRef,
+  afterRenderEffect,
+  viewChild,
+  afterNextRender,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { Detection } from '../models/detection.model';
-import { UploadedDocument } from '../models/uploaded_document.model'
+import { UploadedDocument } from '../models/uploaded_document.model';
 @Component({
   selector: 'app-image-viewport',
   standalone: true,
@@ -8,7 +21,6 @@ import { UploadedDocument } from '../models/uploaded_document.model'
   styleUrl: './image-viewport.scss',
 })
 export class ImageViewport {
-
   constructor() {
     effect(() => {
       this.imageUrl();
@@ -54,24 +66,18 @@ export class ImageViewport {
 
   fitScale = signal(1);
 
-  displayWidth = computed(() =>
-    this.imageWidth() * this.fitScale() * this.zoom()
-  );
+  displayWidth = computed(() => this.imageWidth() * this.fitScale() * this.zoom());
 
-  displayHeight = computed(() =>
-    this.imageHeight() * this.fitScale() * this.zoom()
-  );
+  displayHeight = computed(() => this.imageHeight() * this.fitScale() * this.zoom());
 
-  zoomPercentage = computed(() =>
-    Math.round(this.zoom() * 100)
-  );
+  zoomPercentage = computed(() => Math.round(this.zoom() * 100));
 
   zoomIn() {
-    this.zoom.update(current => Math.min(this.maxZoom, current + this.zoomStep));
+    this.zoom.update((current) => Math.min(this.maxZoom, current + this.zoomStep));
   }
 
   zoomOut() {
-    this.zoom.update(current => Math.max(this.minZoom, current - this.zoomStep));
+    this.zoom.update((current) => Math.max(this.minZoom, current - this.zoomStep));
   }
 
   resetZoom() {
@@ -94,10 +100,7 @@ export class ImageViewport {
 
     if (availableWidth <= 0 || availableHeight <= 0) return;
 
-    const scale = Math.min(
-      availableWidth / width,
-      availableHeight / height
-    );
+    const scale = Math.min(availableWidth / width, availableHeight / height);
 
     this.fitScale.set(scale);
   }
@@ -107,8 +110,15 @@ export class ImageViewport {
     const stage = this.imageStage()?.nativeElement;
     const wrapper = this.imageWrapper()?.nativeElement;
 
-    if (!this.showBoundingBoxes() || !detection || !stage || !wrapper ||
-        this.imageWidth() === 0 || this.imageHeight() === 0) return;
+    if (
+      !this.showBoundingBoxes() ||
+      !detection ||
+      !stage ||
+      !wrapper ||
+      this.imageWidth() === 0 ||
+      this.imageHeight() === 0
+    )
+      return;
 
     const [x1, y1, x2, y2] = detection.bbox;
 
@@ -121,13 +131,9 @@ export class ImageViewport {
     const scaleX = wrapperRect.width / this.imageWidth();
     const scaleY = wrapperRect.height / this.imageHeight();
 
-    const checkboxX =
-      wrapperRect.left - stageRect.left +
-      centerX * scaleX;
+    const checkboxX = wrapperRect.left - stageRect.left + centerX * scaleX;
 
-    const checkboxY =
-      wrapperRect.top - stageRect.top +
-      centerY * scaleY;
+    const checkboxY = wrapperRect.top - stageRect.top + centerY * scaleY;
 
     stage.scrollTo({
       left: stage.scrollLeft + checkboxX - stage.clientWidth / 2,
@@ -154,13 +160,13 @@ export class ImageViewport {
   selectedDetection = computed(() => {
     const index = this.selectedDetectionIndex();
     if (index === null) {
-      return null
-    };
+      return null;
+    }
     return this.detections()[index] ?? null;
-  })
+  });
 
   inspectSelection() {
-    this.zoom.update(current => Math.max(current, this.inspectionZoom));
+    this.zoom.update((current) => Math.max(current, this.inspectionZoom));
   }
 
   onImageLoad(event: Event) {
@@ -194,10 +200,7 @@ export class ImageViewport {
 
     const factor = Math.exp(-event.deltaY * 0.01);
 
-    const newZoom = Math.min(
-      this.maxZoom,
-      Math.max(this.minZoom, oldZoom * factor)
-    );
+    const newZoom = Math.min(this.maxZoom, Math.max(this.minZoom, oldZoom * factor));
 
     if (newZoom === oldZoom) return;
 
@@ -224,5 +227,4 @@ export class ImageViewport {
       stage.scrollTop += targetY - anchorY;
     });
   }
-
 }

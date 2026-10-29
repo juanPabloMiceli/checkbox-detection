@@ -9,9 +9,7 @@
       −
     </button>
 
-    <span class="zoom-value">
-      {{ zoomPercentage() }}%
-    </span>
+    <span class="zoom-value"> {{ zoomPercentage() }}% </span>
 
     <button
       type="button"
@@ -42,66 +40,74 @@
   }
 </div>
 <div class="results-layout" [class.preview-only]="status() !== 'completed' || !showBoundingBoxes()">
-<div class="document-canvas">
-  <div
-    class="image-stage"
-    [class.image-unavailable]="imageError()"
-    #imageStage
-    (wheel)="onImageWheel($event)"
-  >
-    @if (imageError()) {
-      <div class="image-error" role="alert">
-        <strong>Could not preview this image</strong>
-        <p>The file may be damaged or its format may not be supported by your browser. Remove it and upload a PNG or JPEG image.</p>
-      </div>
-    }
-    <div class="image-scroll-content" [hidden]="imageError()">
-      <div
-        class="image-wrapper"
-        #imageWrapper
-        [style.width.px]="displayWidth()"
-        [style.height.px]="displayHeight()"
-      >
-        <img
-          [src]="imageUrl()"
-          alt="Document preview"
-          (load)="onImageLoad($event)"
-          (error)="onImageError()"
-        />
+  <div class="document-canvas">
+    <div
+      class="image-stage"
+      [class.image-unavailable]="imageError()"
+      #imageStage
+      (wheel)="onImageWheel($event)"
+    >
+      @if (imageError()) {
+        <div class="image-error" role="alert">
+          <strong>Could not preview this image</strong>
+          <p>
+            The file may be damaged or its format may not be supported by your browser. Remove it
+            and upload a PNG or JPEG image.
+          </p>
+        </div>
+      }
+      <div class="image-scroll-content" [hidden]="imageError()">
+        <div
+          class="image-wrapper"
+          #imageWrapper
+          [style.width.px]="displayWidth()"
+          [style.height.px]="displayHeight()"
+        >
+          <img
+            [src]="imageUrl()"
+            alt="Document preview"
+            (load)="onImageLoad($event)"
+            (error)="onImageError()"
+          />
 
-        @if (
-          status() === 'completed' &&
-          showBoundingBoxes() &&
-          imageWidth() > 0 &&
-          imageHeight() > 0
-        ) {
-          <svg
-            class="checkbox-overlay"
-            [attr.viewBox]="'0 0 ' + imageWidth() + ' ' + imageHeight()"
-            preserveAspectRatio="none"
-            (click)="selectionCleared.emit()"
-          >
-            @for (detection of detections(); track $index) {
-              <rect
-                [attr.x]="detection.bbox[0]"
-                [attr.y]="detection.bbox[1]"
-                [attr.width]="detection.bbox[2] - detection.bbox[0]"
-                [attr.height]="detection.bbox[3] - detection.bbox[1]"
-                fill-opacity="0.2"
-                [attr.stroke]="detection.is_checked ? '#16a34a' : '#ef4444'"
-                [attr.stroke-width]="selectedDetectionIndex() === $index ? 8 : 4"
-                [attr.fill]="selectedDetectionIndex() === $index
-                  ? (detection.is_checked ? '#16a34a' : '#ef4444')
-                  : 'none'"
-                (click)="detectionSelected.emit($index); $event.stopPropagation()"
-              />
-            }
-          </svg>
-        }
+          @if (
+            status() === 'completed' && showBoundingBoxes() && imageWidth() > 0 && imageHeight() > 0
+          ) {
+            <svg
+              class="checkbox-overlay"
+              tabindex="0"
+              role="group"
+              aria-label="Checkbox annotations. Press Escape to clear selection."
+              (keydown.escape)="selectionCleared.emit()"
+              [attr.viewBox]="'0 0 ' + imageWidth() + ' ' + imageHeight()"
+              preserveAspectRatio="none"
+              (click)="selectionCleared.emit()"
+            >
+              @for (detection of detections(); track $index) {
+                <rect
+                  [attr.x]="detection.bbox[0]"
+                  [attr.y]="detection.bbox[1]"
+                  [attr.width]="detection.bbox[2] - detection.bbox[0]"
+                  [attr.height]="detection.bbox[3] - detection.bbox[1]"
+                  fill-opacity="0.2"
+                  [attr.stroke]="detection.is_checked ? '#16a34a' : '#ef4444'"
+                  [attr.stroke-width]="selectedDetectionIndex() === $index ? 8 : 4"
+                  [attr.fill]="
+                    selectedDetectionIndex() === $index
+                      ? detection.is_checked
+                        ? '#16a34a'
+                        : '#ef4444'
+                      : 'none'
+                  "
+                  (click)="detectionSelected.emit($index); $event.stopPropagation()"
+                />
+              }
+            </svg>
+          }
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <ng-content />
 </div>

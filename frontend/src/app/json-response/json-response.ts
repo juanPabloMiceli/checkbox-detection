@@ -15,24 +15,32 @@ interface JsonToken {
 export class JsonResponse {
   readonly response = input.required<DetectionResponse>();
 
-  readonly lines = computed(() => JSON.stringify(this.response(), null, 2)
-    .split('\n')
-    .map(line => {
-      const tokens: JsonToken[] = [];
-      // Render text through interpolation, never injected HTML.
-      const pattern = /"(?:\\.|[^"\\])*"|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[^"\w\d-]+/g;
-      for (const match of line.matchAll(pattern)) {
-        const text = match[0];
-        let kind: JsonToken['kind'] = 'punctuation';
-        if (text.startsWith('"')) {
-          kind = line.slice(match.index + text.length).trimStart().startsWith(':') ? 'key' : 'string';
-        } else if (/^(true|false|null)$/.test(text)) {
-          kind = 'boolean';
-        } else if (/^-?\d/.test(text)) {
-          kind = 'number';
+  readonly lines = computed(() =>
+    JSON.stringify(this.response(), null, 2)
+      .split('\n')
+      .map((line) => {
+        const tokens: JsonToken[] = [];
+        // Render text through interpolation, never injected HTML.
+        const pattern =
+          /"(?:\\.|[^"\\])*"|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[^"\w\d-]+/g;
+        for (const match of line.matchAll(pattern)) {
+          const text = match[0];
+          let kind: JsonToken['kind'] = 'punctuation';
+          if (text.startsWith('"')) {
+            kind = line
+              .slice(match.index + text.length)
+              .trimStart()
+              .startsWith(':')
+              ? 'key'
+              : 'string';
+          } else if (/^(true|false|null)$/.test(text)) {
+            kind = 'boolean';
+          } else if (/^-?\d/.test(text)) {
+            kind = 'number';
+          }
+          tokens.push({ text, kind });
         }
-        tokens.push({ text, kind });
-      }
-      return tokens;
-    }));
+        return tokens;
+      }),
+  );
 }

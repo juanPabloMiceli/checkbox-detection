@@ -59,7 +59,7 @@
   line-height: 1.5;
 }
 
-.upload-area input[type="file"] {
+.upload-area input[type='file'] {
   display: block;
   width: 100%;
   max-width: 240px;
@@ -69,7 +69,7 @@
   font-size: 11px;
 }
 
-.upload-area input[type="file"]::file-selector-button {
+.upload-area input[type='file']::file-selector-button {
   padding: 8px 12px;
   margin-right: 8px;
 
@@ -86,10 +86,9 @@
   transition: background-color 0.15s ease;
 }
 
-.upload-area input[type="file"]::file-selector-button:hover {
+.upload-area input[type='file']::file-selector-button:hover {
   background: tokens.$primary-surface-hover;
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   .upload-area {

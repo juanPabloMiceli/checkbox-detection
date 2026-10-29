@@ -16,14 +16,14 @@ export class DocumentWorkspace implements OnDestroy {
 
   readonly documents = this.documentState.asReadonly();
   readonly selectedDocumentId = this.selectionState.asReadonly();
-  readonly selectedDocument = computed(() =>
-    this.documents().find(document => document.id === this.selectedDocumentId()) ?? null
+  readonly selectedDocument = computed(
+    () => this.documents().find((document) => document.id === this.selectedDocumentId()) ?? null,
   );
 
   addFiles(files: File[]): string[] {
     const newDocuments: UploadedDocument[] = files
-      .filter(file => file.type.startsWith('image/'))
-      .map(file => ({
+      .filter((file) => file.type.startsWith('image/'))
+      .map((file) => ({
         id: this.nextDocumentId++,
         name: file.name,
         file,
@@ -32,12 +32,12 @@ export class DocumentWorkspace implements OnDestroy {
         detections: [],
       }));
 
-    this.documentState.update(current => [...current, ...newDocuments]);
+    this.documentState.update((current) => [...current, ...newDocuments]);
     if (newDocuments.length > 0) {
       this.selectionState.set(newDocuments[0].id);
     }
 
-    return files.filter(file => !file.type.startsWith('image/')).map(file => file.name);
+    return files.filter((file) => !file.type.startsWith('image/')).map((file) => file.name);
   }
 
   selectDocument(documentId: number) {
@@ -45,7 +45,7 @@ export class DocumentWorkspace implements OnDestroy {
   }
 
   processDocument(documentId: number) {
-    const document = this.documents().find(doc => doc.id === documentId);
+    const document = this.documents().find((doc) => doc.id === documentId);
     if (!document || document.status === 'processing') return;
 
     this.updateDocument(documentId, {
@@ -54,20 +54,21 @@ export class DocumentWorkspace implements OnDestroy {
       errorMessage: undefined,
     });
 
-    const subscription = this.detectionService.detectCheckboxes(document.file).pipe(
-      finalize(() => this.activeRequests.delete(documentId))
-    ).subscribe({
-      next: response => {
-        this.updateDocument(documentId, { detections: response.boxes, status: 'completed' });
-      },
-      error: (error: HttpErrorResponse) => {
-        this.updateDocument(documentId, {
-          detections: [],
-          status: 'error',
-          errorMessage: this.getErrorMessage(error),
-        });
-      },
-    });
+    const subscription = this.detectionService
+      .detectCheckboxes(document.file)
+      .pipe(finalize(() => this.activeRequests.delete(documentId)))
+      .subscribe({
+        next: (response) => {
+          this.updateDocument(documentId, { detections: response.boxes, status: 'completed' });
+        },
+        error: (error: HttpErrorResponse) => {
+          this.updateDocument(documentId, {
+            detections: [],
+            status: 'error',
+            errorMessage: this.getErrorMessage(error),
+          });
+        },
+      });
 
     // A synchronous response can complete before subscribe returns.
     if (!subscription.closed) {
@@ -76,15 +77,17 @@ export class DocumentWorkspace implements OnDestroy {
   }
 
   processAll() {
-    this.documents().forEach(document => this.processDocument(document.id));
+    this.documents().forEach((document) => this.processDocument(document.id));
   }
 
   removeDocument(documentId: number) {
-    const document = this.documents().find(document => document.id === documentId);
+    const document = this.documents().find((document) => document.id === documentId);
     if (!document) return;
 
-    this.documentState.update(documents => documents.filter(document => document.id !== documentId));
-    this.selectionState.update(selectedId => selectedId === documentId ? null : selectedId);
+    this.documentState.update((documents) =>
+      documents.filter((document) => document.id !== documentId),
+    );
+    this.selectionState.update((selectedId) => (selectedId === documentId ? null : selectedId));
     URL.revokeObjectURL(document.imageUrl);
     this.activeRequests.get(documentId)?.unsubscribe();
   }
@@ -101,9 +104,11 @@ export class DocumentWorkspace implements OnDestroy {
   }
 
   private updateDocument(documentId: number, changes: Partial<UploadedDocument>) {
-    this.documentState.update(documents => documents.map(document =>
-      document.id === documentId ? { ...document, ...changes } : document
-    ));
+    this.documentState.update((documents) =>
+      documents.map((document) =>
+        document.id === documentId ? { ...document, ...changes } : document,
+      ),
+    );
   }
 
   private getErrorMessage(error: HttpErrorResponse): string {

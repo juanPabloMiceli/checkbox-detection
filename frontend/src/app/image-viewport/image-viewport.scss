@@ -137,7 +137,6 @@
   height: 32px;
   padding: 0 10px;
 
-
   color: tokens.$text-control;
   font-size: 13px;
   font-weight: 600;
@@ -161,7 +160,9 @@
   font-variant-numeric: tabular-nums;
 }
 
-.image-scroll-content[hidden] { display: none; }
+.image-scroll-content[hidden] {
+  display: none;
+}
 
 .image-stage.image-unavailable {
   display: grid;

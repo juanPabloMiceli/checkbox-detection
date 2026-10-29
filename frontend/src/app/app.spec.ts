@@ -8,8 +8,7 @@ describe('App', () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [provideHttpClient(), provideHttpClientTesting()],
-    })
-      .compileComponents();
+    }).compileComponents();
   });
 
   it('should create the app', () => {
@@ -23,7 +22,11 @@ describe('App', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.documents-header h2')?.textContent).toContain('Documents');
-    expect(compiled.querySelector('.documents-empty')?.textContent).toContain('No documents uploaded yet.');
-    expect(compiled.querySelector('.empty-viewer')?.textContent).toContain('Select a document to preview it.');
+    expect(compiled.querySelector('.documents-empty')?.textContent).toContain(
+      'No documents uploaded yet.',
+    );
+    expect(compiled.querySelector('.empty-viewer')?.textContent).toContain(
+      'Select a document to preview it.',
+    );
   });
 });

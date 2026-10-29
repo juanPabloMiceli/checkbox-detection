@@ -2,11 +2,7 @@
   <div class="documents-list-header">
     <span>Your documents</span>
 
-    <button
-      type="button"
-      class="process-all-button"
-      (click)="processAll.emit()"
-    >
+    <button type="button" class="process-all-button" (click)="processAll.emit()">
       Process all
     </button>
   </div>
@@ -14,10 +10,7 @@
 
 <div class="documents-list">
   @for (document of documents(); track document.id) {
-    <article
-      class="document-item"
-      [class.selected]="selectedDocumentId() === document.id"
-    >
+    <article class="document-item" [class.selected]="selectedDocumentId() === document.id">
       <button
         type="button"
         class="document-select"

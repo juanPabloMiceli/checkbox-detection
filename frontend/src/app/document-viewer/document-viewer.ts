@@ -27,8 +27,10 @@ export class DocumentViewer {
   }
 
   totalDetections = computed(() => this.detections().length);
-  totalCheckedDetections = computed(() => this.detections().filter(detection => detection.is_checked).length)
-  totalUncheckedDetections = computed(() => this.totalDetections() - this.totalCheckedDetections())
+  totalCheckedDetections = computed(
+    () => this.detections().filter((detection) => detection.is_checked).length,
+  );
+  totalUncheckedDetections = computed(() => this.totalDetections() - this.totalCheckedDetections());
 
   selectDetection(index: number) {
     if (this.selectedDetectionIndex() === index) {
@@ -46,7 +48,7 @@ export class DocumentViewer {
   }
 
   toggleBoundingBoxes() {
-    this.showBoundingBoxes.update(current => !current);
+    this.showBoundingBoxes.update((current) => !current);
   }
 
   nextDetection() {
@@ -56,9 +58,7 @@ export class DocumentViewer {
 
     const current = this.selectedDetectionIndex();
 
-    const next = current === null
-      ? 0
-      : (current + 1) % total;
+    const next = current === null ? 0 : (current + 1) % total;
 
     this.selectedDetectionIndex.set(next);
   }
@@ -70,11 +70,8 @@ export class DocumentViewer {
 
     const current = this.selectedDetectionIndex();
 
-    const previous = current === null
-      ? total - 1
-      : (current - 1 + total) % total;
+    const previous = current === null ? total - 1 : (current - 1 + total) % total;
 
     this.selectedDetectionIndex.set(previous);
   }
-
 }

@@ -1,0 +1,7 @@
+.vscode/
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+frontend/bun.lock
+frontend/public/samples/

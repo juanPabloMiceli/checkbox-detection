@@ -53,9 +53,7 @@ Expected response shape (coordinates are `[x1, y1, x2, y2]` in original image pi
 
 ```json
 {
-  "boxes": [
-    { "bbox": [330, 508, 386, 552], "is_checked": true }
-  ]
+  "boxes": [{ "bbox": [330, 508, 386, 552], "is_checked": true }]
 }
 ```
 
@@ -109,3 +107,24 @@ is not included.
 Once the backend source has been copied into `backend/`, start it in a separate
 terminal from that directory (for the Go mock: `go run .`). See
 [backend setup notes](backend/README.md) for the expected API contract.
+
+## Formatting and linting
+
+From `frontend/`:
+
+```bash
+bun run format        # Format supported files across the repository
+bun run format:check  # Check formatting without changing files
+bun run lint          # Check TypeScript and Angular templates; warnings fail
+bun run lint:fix      # Apply automatic lint fixes
+```
+
+Prettier uses the shared root `.prettierrc` and `.prettierignore`. Generated
+output, caches, dependencies, the lockfile and sample fixtures are excluded.
+ESLint uses `frontend/eslint.config.mjs` with the recommended TypeScript and Angular
+rules, template accessibility checks, and Angular selector conventions. Prettier
+handles formatting; ESLint checks code quality. Editor settings in `.vscode/` stay
+local and are not tracked.
+
+`ng serve` and `ng lint` are Angular CLI commands. There is no built-in `ng format`
+command: use `bun run format` or `npm run format` to invoke Prettier.
