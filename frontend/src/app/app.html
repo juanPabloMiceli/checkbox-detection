@@ -18,7 +18,7 @@
       <div class="documents-header">
         <h2>Documents</h2>
         <span class="documents-count">
-          {{ documents().length }} files
+          {{ workspace.documents().length }} files
         </span>
       </div>
       <div
@@ -41,14 +41,14 @@
         />
       </div>
 
-      @if (documents().length > 0) {
+      @if (workspace.documents().length > 0) {
         <div class="documents-list-header">
           <span>Your documents</span>
 
           <button
             type="button"
             class="process-all-button"
-            (click)="processAllImages()"
+            (click)="workspace.processAll()"
           >
             Process all
           </button>
@@ -56,16 +56,16 @@
       }
 
       <div class="documents-list">
-        @for (document of documents(); track document.id) {
+        @for (document of workspace.documents(); track document.id) {
           <article
             class="document-item"
-            [class.selected]="selectedDocumentId() === document.id"
-            (click)="selectNewDocument(document.id)"
+            [class.selected]="workspace.selectedDocumentId() === document.id"
+            (click)="workspace.selectDocument(document.id)"
             role="button"
             tabindex="0"
             [attr.aria-label]="'Preview ' + document.name"
-            (keydown.enter)="selectNewDocument(document.id)"
-            (keydown.space)="$event.preventDefault(); selectNewDocument(document.id)"
+            (keydown.enter)="workspace.selectDocument(document.id)"
+            (keydown.space)="$event.preventDefault(); workspace.selectDocument(document.id)"
 
           >
             <div class="document-select">
@@ -124,9 +124,9 @@
                 type="button"
                 class="document-process-button"
                 [disabled]="document.status === 'processing'"
-                (click)="$event.stopPropagation(); detectCheckboxes(document.id)"
-                (keydown.enter)="$event.stopPropagation(); detectCheckboxes(document.id)"
-                (keydown.space)="$event.stopPropagation(); $event.preventDefault(); detectCheckboxes(document.id)"
+                (click)="$event.stopPropagation(); workspace.processDocument(document.id)"
+                (keydown.enter)="$event.stopPropagation(); workspace.processDocument(document.id)"
+                (keydown.space)="$event.stopPropagation(); $event.preventDefault(); workspace.processDocument(document.id)"
               >
                 @switch (document.status) {
                   @case ('processing') {
@@ -149,9 +149,9 @@
                 class="document-remove-button"
                 [attr.aria-label]="'Remove ' + document.name"
                 title="Remove document"
-                (click)="$event.stopPropagation(); removeDocument(document.id)"
-                (keydown.enter)="$event.stopPropagation(); removeDocument(document.id)"
-                (keydown.space)="$event.stopPropagation(); $event.preventDefault(); removeDocument(document.id)"
+                (click)="$event.stopPropagation(); workspace.removeDocument(document.id)"
+                (keydown.enter)="$event.stopPropagation(); workspace.removeDocument(document.id)"
+                (keydown.space)="$event.stopPropagation(); $event.preventDefault(); workspace.removeDocument(document.id)"
               >
                 ✕
               </button>
@@ -168,7 +168,7 @@
     </section>
 
     <section class="viewer-panel">
-      @if (selectedDocument(); as document) {
+      @if (workspace.selectedDocument(); as document) {
         <app-document-viewer
           [imageUrl]="document.imageUrl"
           [detections]="document.detections"
