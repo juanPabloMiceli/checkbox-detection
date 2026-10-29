@@ -2,11 +2,12 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "bun"
+    "packageManager": "bun",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
-    "CursoBigoteAngular": {
+    "checkbox-detection": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -69,10 +70,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "CursoBigoteAngular:build:production"
+              "buildTarget": "checkbox-detection:build:production"
             },
             "development": {
-              "buildTarget": "CursoBigoteAngular:build:development"
+              "buildTarget": "checkbox-detection:build:development"
             }
           },
           "defaultConfiguration": "development"

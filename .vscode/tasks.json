@@ -4,6 +4,7 @@
   "tasks": [
     {
       "type": "npm",
+      "path": "frontend",
       "script": "start",
       "isBackground": true,
       "problemMatcher": {
@@ -22,6 +23,7 @@
     },
     {
       "type": "npm",
+      "path": "frontend",
       "script": "test",
       "isBackground": true,
       "problemMatcher": {
