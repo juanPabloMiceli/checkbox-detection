@@ -1,0 +1,65 @@
+    <aside class="detections-panel">
+      <h3>Checkboxes ({{ totalDetections() }})</h3>
+
+      <div class="detection-navigation">
+        <span class="detection-counter">
+          @if (selectedDetectionIndex() !== null && showBoundingBoxes()) {
+            Detection {{ selectedDetectionIndex()! + 1 }}
+            of {{ totalDetections() }}
+          } @else {
+            No detection selected
+          }
+        </span>
+
+        <div class="navigation-buttons">
+          <button
+            type="button"
+            [disabled]="totalDetections() === 0 || !showBoundingBoxes()"
+            (click)="previousRequested.emit()"
+          >
+            ← Previous
+          </button>
+
+          <button
+            type="button"
+            [disabled]="totalDetections() === 0 || !showBoundingBoxes()"
+            (click)="nextRequested.emit()"
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+      <div class="detections-list">
+        @for (detection of detections(); track $index) {
+          <button
+            #detectionButton
+            type="button"
+            class="detection-item"
+            [class.selected]="selectedDetectionIndex() === $index && showBoundingBoxes()"
+            [attr.aria-pressed]="selectedDetectionIndex() === $index && showBoundingBoxes()"
+            (click)="detectionSelected.emit($index)"
+          >
+            <span class="detection-content">
+              <span>#{{ $index + 1 }}</span>
+
+              @if (selectedDetectionIndex() === $index && showBoundingBoxes()) {
+                <small class="detection-coordinates">
+                  ({{ detection.bbox[0] }}, {{ detection.bbox[1] }})
+                  →
+                  ({{ detection.bbox[2] }}, {{ detection.bbox[3] }})
+                </small>
+              }
+            </span>
+
+            <span
+              [class.checked]="detection.is_checked"
+              [class.unchecked]="!detection.is_checked"
+            >
+              {{ detection.is_checked ? 'Checked' : 'Unchecked' }}
+            </span>
+          </button>
+        } @empty {
+          <p>No checkboxes detected.</p>
+        }
+      </div>
+    </aside>
