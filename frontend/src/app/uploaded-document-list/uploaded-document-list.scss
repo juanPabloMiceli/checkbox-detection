@@ -1,0 +1,346 @@
+@use '../../styles/controls';
+@use '../../styles/tokens';
+
+// The host replaces the list fragment inside the documents panel's flex layout.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.documents-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.documents-list-header > span {
+  color: tokens.$text-subtle;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.process-all-button {
+  padding: 8px 12px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: tokens.$primary;
+  color: tokens.$text-on-primary;
+
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  transition: background-color 0.15s ease;
+}
+
+.process-all-button:hover:not(:disabled) {
+  background: tokens.$primary-hover;
+}
+
+/* =========================================
+   DOCUMENTS LIST
+   ========================================= */
+
+.documents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;
+
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 2px 4px 8px 1px;
+
+  scrollbar-width: thin;
+  scrollbar-color: tokens.$scrollbar-thumb transparent;
+}
+
+.document-item {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+
+  padding: 12px;
+
+  background: tokens.$surface;
+  border: 1px solid tokens.$border;
+  border-radius: 11px;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.document-item:hover, .document-item:focus-within {
+  background: tokens.$surface-subtle;
+}
+
+.document-item.selected {
+  background: tokens.$primary-surface;
+  border-color: tokens.$selection-border;
+}
+
+/* Main document selection button */
+
+.document-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Document icon */
+
+.document-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+
+  width: 38px;
+  height: 38px;
+
+  border-radius: 9px;
+  background: tokens.$surface-muted;
+
+  color: tokens.$text-muted;
+  font-size: 23px;
+}
+
+.document-item.selected .document-icon {
+  background: tokens.$primary-surface-hover;
+  color: tokens.$primary;
+}
+
+/* Document metadata */
+
+.document-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+
+  min-width: 0;
+}
+
+.document-name {
+  display: block;
+  max-width: 100%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: tokens.$text-primary;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.document-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+
+  color: tokens.$text-muted;
+  font-size: 11px;
+}
+
+/* Status */
+
+.document-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  color: tokens.$text-muted;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.document-status.pending {
+  color: tokens.$text-muted;
+}
+
+.document-status.processing {
+  color: tokens.$primary;
+}
+
+.document-status.completed {
+  color: tokens.$success;
+}
+
+.document-status.error {
+  color: tokens.$danger;
+}
+
+.document-detection-count {
+  color: tokens.$text-muted;
+}
+
+/* Processing errors */
+
+.document-error {
+  margin: 0;
+  padding: 8px 10px;
+
+  border-radius: 7px;
+  background: tokens.$danger-surface;
+
+  color: tokens.$danger-text;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   DOCUMENT ACTIONS
+   ========================================= */
+
+.document-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.document-process-button {
+  @include controls.outlined-button(7px);
+  padding: 7px 12px;
+
+
+  color: tokens.$text-control;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.document-process-button:hover:not(:disabled) {
+  background: tokens.$surface-muted;
+  border-color: tokens.$border-strong;
+}
+
+.document-process-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.document-item:not(.selected)
+  .document-process-button:not(:disabled) {
+  background: tokens.$surface-subtle;
+}
+
+.document-remove-button {
+  display: grid;
+  place-items: center;
+
+  width: 30px;
+  height: 30px;
+  padding: 0;
+
+  border: 1px solid transparent;
+  border-radius: 7px;
+
+  background: transparent;
+  color: tokens.$text-subtle;
+
+  font-size: 16px;
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.document-remove-button:hover {
+  background: tokens.$danger-surface-hover;
+  color: tokens.$danger;
+}
+
+.document-remove-button:focus-visible,
+.document-process-button:focus-visible,
+.process-all-button:focus-visible {
+  outline: 2px solid tokens.$focus-ring;
+  outline-offset: 2px;
+}
+
+/* =========================================
+   EMPTY DOCUMENT LIST
+   ========================================= */
+
+.documents-empty {
+  padding: 24px 12px;
+
+  border: 1px dashed tokens.$border;
+  border-radius: 10px;
+
+  background: tokens.$surface-subtle;
+  text-align: center;
+}
+
+.documents-empty p {
+  margin: 0 0 5px;
+
+  color: tokens.$text-secondary;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.documents-empty span {
+  color: tokens.$text-subtle;
+  font-size: 12px;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .document-item,
+  .document-process-button,
+  .document-remove-button,
+  .process-all-button {
+    transition: none;
+  }
+}
+
+.document-select:focus-visible {
+  outline: 2px solid tokens.$focus-ring;
+  outline-offset: 4px;
+  border-radius: 4px;
+}

@@ -4,12 +4,13 @@
       <img
         src="/checkbox-logo.svg"
         class="brand-logo"
-        alt="Checkbox Detection"
+        alt="" aria-hidden="true"
       />
+      <span class="brand-name">Checkbox Detection</span>
     </div>
 
     <span class="header-subtitle">
-      Checkbox Detection
+      Document workspace
     </span>
   </header>
 
@@ -21,149 +22,16 @@
           {{ workspace.documents().length }} files
         </span>
       </div>
-      <div
-        class="upload-area"
-        [class.dragging]="isDragging()"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave($event)"
-        (drop)="onDrop($event)"
-      >
-        <div class="upload-icon">↑</div>
-        <strong>
-          {{ isDragging() ? 'Drop images here' : 'Add documents' }}
-        </strong>
-        <p>Drag and drop images here, or choose files</p>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          (change)="onFileSelected($event)"
-        />
-      </div>
+      <app-upload-area (filesAdded)="addFiles($event)" />
 
-      @if (workspace.documents().length > 0) {
-        <div class="documents-list-header">
-          <span>Your documents</span>
-
-          <button
-            type="button"
-            class="process-all-button"
-            (click)="workspace.processAll()"
-          >
-            Process all
-          </button>
-        </div>
-      }
-
-      <div class="documents-list">
-        @for (document of workspace.documents(); track document.id) {
-          <article
-            class="document-item"
-            [class.selected]="workspace.selectedDocumentId() === document.id"
-            (click)="workspace.selectDocument(document.id)"
-            role="button"
-            tabindex="0"
-            [attr.aria-label]="'Preview ' + document.name"
-            (keydown.enter)="workspace.selectDocument(document.id)"
-            (keydown.space)="$event.preventDefault(); workspace.selectDocument(document.id)"
-
-          >
-            <div class="document-select">
-              <span class="document-icon" aria-hidden="true">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <path d="m21 15-5-5L5 21" />
-                </svg>
-              </span>
-
-              <span class="document-meta">
-                <span class="document-name" [title]="document.name">
-                  {{ document.name }}
-                </span>
-
-                <span class="document-subtitle">
-                  <span
-                    class="document-status"
-                    [class.pending]="document.status === 'pending'"
-                    [class.processing]="document.status === 'processing'"
-                    [class.completed]="document.status === 'completed'"
-                    [class.error]="document.status === 'error'"
-                  >
-                    <span class="status-dot"></span>
-                    {{ document.status }}
-                  </span>
-
-                  @if (document.status === 'completed') {
-                    <span class="document-detection-count">
-                      · {{ document.detections.length }} checkboxes
-                    </span>
-                  }
-                </span>
-              </span>
-            </div>
-
-            @if (document.status === 'error') {
-              <p class="document-error">
-                {{ document.errorMessage ?? 'Processing failed. Please try again.' }}
-              </p>
-            }
-
-            <div class="document-actions">
-              <button
-                type="button"
-                class="document-process-button"
-                [disabled]="document.status === 'processing'"
-                (click)="$event.stopPropagation(); workspace.processDocument(document.id)"
-                (keydown.enter)="$event.stopPropagation(); workspace.processDocument(document.id)"
-                (keydown.space)="$event.stopPropagation(); $event.preventDefault(); workspace.processDocument(document.id)"
-              >
-                @switch (document.status) {
-                  @case ('processing') {
-                    Processing...
-                  }
-                  @case ('completed') {
-                    Reprocess
-                  }
-                  @case ('error') {
-                    Retry
-                  }
-                  @default {
-                    Process
-                  }
-                }
-              </button>
-
-              <button
-                type="button"
-                class="document-remove-button"
-                [attr.aria-label]="'Remove ' + document.name"
-                title="Remove document"
-                (click)="$event.stopPropagation(); workspace.removeDocument(document.id)"
-                (keydown.enter)="$event.stopPropagation(); workspace.removeDocument(document.id)"
-                (keydown.space)="$event.stopPropagation(); $event.preventDefault(); workspace.removeDocument(document.id)"
-              >
-                ✕
-              </button>
-            </div>
-          </article>
-        } @empty {
-          <div class="documents-empty">
-            <p>No documents uploaded yet.</p>
-            <span>Choose images above to get started.</span>
-          </div>
-        }
-      </div>
+      <app-uploaded-document-list
+        [documents]="workspace.documents()"
+        [selectedDocumentId]="workspace.selectedDocumentId()"
+        (documentSelected)="workspace.selectDocument($event)"
+        (documentProcessed)="workspace.processDocument($event)"
+        (documentRemoved)="workspace.removeDocument($event)"
+        (processAll)="workspace.processAll()"
+      />
 
     </section>
 

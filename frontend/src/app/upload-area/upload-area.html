@@ -1,0 +1,20 @@
+<div
+  class="upload-area"
+  [class.dragging]="isDragging()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <div class="upload-icon">↑</div>
+  <label for="image-upload">
+    {{ isDragging() ? 'Drop images here' : 'Add documents' }}
+  </label>
+  <p>Drag and drop images here, or choose files</p>
+  <input
+    id="image-upload"
+    type="file"
+    accept="image/*"
+    multiple
+    (change)="onFileSelected($event)"
+  />
+</div>

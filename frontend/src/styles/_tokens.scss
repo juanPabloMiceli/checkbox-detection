@@ -1,0 +1,42 @@
+// Surfaces
+$surface: #ffffff;
+$surface-subtle: #f8fafc;
+$surface-muted: #f1f5f9;
+
+// Text
+$text-primary: #0f172a;
+$text-secondary: #475569;
+$text-muted: #64748b;
+$text-subtle: #94a3b8;
+$text-control: #334155;
+
+// Borders
+$border: #e2e8f0;
+$border-control: #cbd5e1;
+
+// Primary actions and selection
+$primary: #2563eb;
+$primary-hover: #1d4ed8;
+$primary-surface: #eff6ff;
+$primary-surface-hover: #dbeafe;
+$primary-border: #bfdbfe;
+$selection-border: #93c5fd;
+$upload-hover-border: #60a5fa;
+
+// Success
+$success: #15803d;
+$success-text: #166534;
+
+// Errors and destructive actions
+$danger: #dc2626;
+$danger-text: #b91c1c;
+$danger-heading: #991b1b;
+$danger-surface: #fef2f2;
+$danger-surface-hover: #fee2e2;
+$danger-border: #fecaca;
+
+// Separate roles that currently share a value.
+$text-on-primary: #ffffff;
+$border-strong: #94a3b8;
+$scrollbar-thumb: #cbd5e1;
+$focus-ring: #2563eb;
