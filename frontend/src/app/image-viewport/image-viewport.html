@@ -3,7 +3,7 @@
     <button
       type="button"
       (click)="zoomOut()"
-      [disabled]="zoom() <= minZoom"
+      [disabled]="imageError() || zoom() <= minZoom"
       aria-label="Zoom out"
     >
       −
@@ -16,7 +16,7 @@
     <button
       type="button"
       (click)="zoomIn()"
-      [disabled]="zoom() >= maxZoom"
+      [disabled]="imageError() || zoom() >= maxZoom"
       aria-label="Zoom in"
     >
       +
@@ -26,6 +26,7 @@
       type="button"
       (click)="resetZoom()"
       title="Fit image to viewer"
+      [disabled]="imageError()"
     >
       Fit
     </button>
@@ -40,14 +41,21 @@
     </button>
   }
 </div>
-<div class="results-layout" [class.preview-only]="status() !== 'completed'">
+<div class="results-layout" [class.preview-only]="status() !== 'completed' || !showBoundingBoxes()">
 <div class="document-canvas">
   <div
     class="image-stage"
+    [class.image-unavailable]="imageError()"
     #imageStage
     (wheel)="onImageWheel($event)"
   >
-    <div class="image-scroll-content">
+    @if (imageError()) {
+      <div class="image-error" role="alert">
+        <strong>Could not preview this image</strong>
+        <p>The file may be damaged or its format may not be supported by your browser. Remove it and upload a PNG or JPEG image.</p>
+      </div>
+    }
+    <div class="image-scroll-content" [hidden]="imageError()">
       <div
         class="image-wrapper"
         #imageWrapper
@@ -58,6 +66,7 @@
           [src]="imageUrl()"
           alt="Document preview"
           (load)="onImageLoad($event)"
+          (error)="onImageError()"
         />
 
         @if (

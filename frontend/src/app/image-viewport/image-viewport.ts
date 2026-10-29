@@ -12,6 +12,7 @@ export class ImageViewport {
   constructor() {
     effect(() => {
       this.imageUrl();
+      this.imageError.set(false);
       this.imageWidth.set(0);
       this.imageHeight.set(0);
     });
@@ -145,6 +146,8 @@ export class ImageViewport {
   readonly selectionCleared = output<void>();
   readonly annotationsToggled = output<void>();
 
+  imageError = signal(false);
+
   imageWidth = signal(0);
   imageHeight = signal(0);
 
@@ -162,6 +165,7 @@ export class ImageViewport {
 
   onImageLoad(event: Event) {
     const image = event.target as HTMLImageElement;
+    this.imageError.set(false);
 
     this.imageWidth.set(image.naturalWidth);
     this.imageHeight.set(image.naturalHeight);
@@ -170,8 +174,14 @@ export class ImageViewport {
     this.updateFitScale();
   }
 
+  onImageError() {
+    this.imageError.set(true);
+    this.imageWidth.set(0);
+    this.imageHeight.set(0);
+  }
+
   onImageWheel(event: WheelEvent) {
-    if (!event.ctrlKey || this.imageWidth() === 0) return;
+    if (!event.ctrlKey || this.imageError() || this.imageWidth() === 0) return;
 
     event.preventDefault();
 
