@@ -1,0 +1,62 @@
+@use '../../styles/tokens';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid tokens.$border;
+  border-radius: 8px;
+  background: tokens.$surface-subtle;
+}
+
+.response-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid tokens.$border;
+  color: tokens.$text-muted;
+  font-size: 11px;
+}
+
+.response-format {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: tokens.$surface-muted;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.json-code {
+  white-space: normal;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 12px;
+  overflow: auto;
+  color: tokens.$text-secondary;
+  font: 12px / 1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  tab-size: 2;
+  scrollbar-width: thin;
+  scrollbar-color: tokens.$scrollbar-thumb transparent;
+
+  &:focus-visible {
+    outline: 2px solid tokens.$focus-ring;
+    outline-offset: -2px;
+  }
+}
+
+.json-line {
+  display: block;
+  white-space: pre;
+  min-height: 1.7em;
+}
+
+.key { color: tokens.$primary-hover; }
+.number { color: tokens.$danger-text; }
+.boolean { color: tokens.$success-text; font-weight: 600; }
+.string { color: tokens.$success-text; }

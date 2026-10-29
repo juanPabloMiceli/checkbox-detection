@@ -1,0 +1,19 @@
+<div class="response-header">
+  <span class="response-label">Detection response</span>
+  <span class="response-format">JSON</span>
+</div>
+<div
+  class="json-code"
+  tabindex="0"
+  aria-label="Formatted detection response"
+>
+  <code>
+    @for (line of lines(); track $index) {
+      <span class="json-line">
+        @for (token of line; track $index) {
+          <span [class]="token.kind">{{ token.text }}</span>
+        }
+      </span>
+    }
+  </code>
+</div>

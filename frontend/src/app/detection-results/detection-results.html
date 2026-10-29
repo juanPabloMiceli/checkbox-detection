@@ -1,6 +1,19 @@
     <aside class="detections-panel">
       <h3>Checkboxes ({{ totalDetections() }})</h3>
 
+      <div class="view-options" role="group" aria-label="Results view">
+        <button
+          type="button"
+          [attr.aria-pressed]="viewMode() === 'list'"
+          (click)="viewMode.set('list')"
+        >Checkboxes</button>
+        <button
+          type="button"
+          [attr.aria-pressed]="viewMode() === 'json'"
+          (click)="viewMode.set('json')"
+        >JSON</button>
+      </div>
+      @if (viewMode() === 'list') {
       <div class="detection-navigation">
         <span class="detection-counter">
           @if (selectedDetectionIndex() !== null && showBoundingBoxes()) {
@@ -62,4 +75,7 @@
           <p>No checkboxes detected.</p>
         }
       </div>
+      } @else {
+        <app-json-response [response]="response()" />
+      }
     </aside>
