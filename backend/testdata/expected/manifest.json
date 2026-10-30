@@ -1,0 +1,40 @@
+{
+  "description": "Characterization of current defaults; not complete ground truth.",
+  "toolchain": {
+    "go": "1.27.3",
+    "gocv": "0.43.0",
+    "opencv": "4.13.0"
+  },
+  "fixtures": [
+    {
+      "image": "im0.png",
+      "sha256": "909755ab53b766e8e04032e47d96863c0548260fe1a52c68034f54bcc5b9ecc2",
+      "expected": "im0.json",
+      "boxes": 118
+    },
+    {
+      "image": "im1.jpg",
+      "sha256": "1633970152be713ab0e813834d4a412446498eacc088dc8e96ae8cd8becd086e",
+      "expected": "im1.json",
+      "boxes": 42
+    },
+    {
+      "image": "im2.png",
+      "sha256": "90efefab295933c29816a9b4c8a5609c9d9ef36cb61933f96cf1f88756171dfd",
+      "expected": "im2.json",
+      "boxes": 48
+    },
+    {
+      "image": "im3.png",
+      "sha256": "872567fd6909c99512485b255e9bc4c59c25536bf968e81998d54a0f34e3b5a4",
+      "expected": "im3.json",
+      "boxes": 79
+    },
+    {
+      "image": "im5.png",
+      "sha256": "44580b15e435a6fb361f84c6ced9d1962fe21b637462b023993d60b721439f12",
+      "expected": "im5.json",
+      "boxes": 26
+    }
+  ]
+}

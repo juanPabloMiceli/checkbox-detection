@@ -1,0 +1,436 @@
+{
+  "boxes": [
+    {
+      "bbox": [
+        1763,
+        804,
+        1816,
+        849
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2013,
+        804,
+        2066,
+        849
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2238,
+        804,
+        2291,
+        849
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        854,
+        1817,
+        899
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2011,
+        854,
+        2067,
+        899
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        854,
+        2292,
+        899
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        904,
+        1817,
+        949
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2011,
+        904,
+        2067,
+        949
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        904,
+        2292,
+        949
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        954,
+        1817,
+        998
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2011,
+        954,
+        2067,
+        998
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        954,
+        2292,
+        998
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        1054,
+        1817,
+        1099
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2011,
+        1054,
+        2067,
+        1099
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2236,
+        1054,
+        2292,
+        1099
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        1104,
+        1817,
+        1149
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2011,
+        1104,
+        2067,
+        1149
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        1104,
+        2292,
+        1149
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        1761,
+        1154,
+        1817,
+        1199
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2011,
+        1154,
+        2067,
+        1199
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2236,
+        1154,
+        2292,
+        1199
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        1204,
+        1817,
+        1249
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2011,
+        1204,
+        2067,
+        1249
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        1204,
+        2292,
+        1249
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        1254,
+        1817,
+        1299
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2011,
+        1254,
+        2067,
+        1299
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        1254,
+        2292,
+        1299
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        1149,
+        1304,
+        1205,
+        1349
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        1361,
+        1304,
+        1417,
+        1349
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        1304,
+        1817,
+        1349
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        2011,
+        1304,
+        2067,
+        1349
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        1304,
+        2292,
+        1349
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        961,
+        1654,
+        1017,
+        1699
+      ],
+      "is_checked": true
+    },
+    {
+      "bbox": [
+        1111,
+        1654,
+        1167,
+        1699
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1763,
+        2704,
+        1816,
+        2749
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2013,
+        2704,
+        2066,
+        2749
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2238,
+        2704,
+        2291,
+        2749
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        2754,
+        1817,
+        2799
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2011,
+        2754,
+        2067,
+        2799
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        2754,
+        2292,
+        2799
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        2804,
+        1817,
+        2849
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2011,
+        2804,
+        2067,
+        2849
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        2804,
+        2292,
+        2849
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1761,
+        2854,
+        1817,
+        2898
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2011,
+        2854,
+        2067,
+        2898
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        2236,
+        2854,
+        2292,
+        2898
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        960,
+        2903,
+        1018,
+        2952
+      ],
+      "is_checked": false
+    },
+    {
+      "bbox": [
+        1136,
+        2904,
+        1192,
+        2949
+      ],
+      "is_checked": false
+    }
+  ]
+}
