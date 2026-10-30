@@ -4,6 +4,7 @@ package config
 // Config contains only values. Copying it gives each detector independent,
 // immutable settings; no maps, slices, or package-level mutable defaults exist.
 type Config struct {
+	Detectors      Detectors      `json:"detectors"`
 	Preprocess     Preprocess     `json:"preprocess"`
 	Contour        Contour        `json:"contour"`
 	Line           Line           `json:"line"`
@@ -14,6 +15,11 @@ type Config struct {
 	Classification Classification `json:"classification"`
 	Dedup          Dedup          `json:"dedup"`
 	MaxImagePixels int64          `json:"maxImagePixels"`
+}
+
+type Detectors struct {
+	OutlineEnabled bool `json:"outlineEnabled"`
+	LineEnabled    bool `json:"lineEnabled"`
 }
 
 type Preprocess struct {
@@ -111,6 +117,7 @@ type Dedup struct {
 // Default returns a fresh copy of the settings used by the frozen fixtures.
 func Default() Config {
 	return Config{
+		Detectors: Detectors{OutlineEnabled: true, LineEnabled: true},
 		Preprocess: Preprocess{
 			BlurKernelWidthPx: 3, BlurKernelHeightPx: 3,
 			BlurSigmaX: 0, BlurSigmaY: 0,

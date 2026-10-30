@@ -9,6 +9,9 @@ import (
 // Validate rejects invalid numeric settings before any native processing.
 func (c Config) Validate() error {
 	var issues []error
+	if !c.Detectors.OutlineEnabled && !c.Detectors.LineEnabled {
+		issues = append(issues, fmt.Errorf("enable at least one detector"))
+	}
 	check := func(ok bool, name, requirement string) {
 		if !ok {
 			issues = append(issues, fmt.Errorf("%s %s", name, requirement))

@@ -60,3 +60,50 @@ func TestDefaultPipelineMatchesCharacterization(t *testing.T) {
 		})
 	}
 }
+
+func TestDetectorSwitchesSkipDisabledAlgorithms(t *testing.T) {
+	source := gocv.IMRead("../../testdata/im3.png", gocv.IMReadColor)
+	if source.Empty() {
+		t.Fatal("could not load fixture")
+	}
+	defer source.Close()
+	binary := imaging.Preprocess(source, config.Default().Preprocess)
+	defer binary.Close()
+	for _, tc := range []struct {
+		name          string
+		outline, line bool
+		source        checkbox.CandidateSource
+	}{
+		{"outline only", true, false, checkbox.SourceContour},
+		{"line only", false, true, checkbox.SourceLine},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := config.Default()
+			cfg.Detectors.OutlineEnabled = tc.outline
+			cfg.Detectors.LineEnabled = tc.line
+			result, err := checkbox.Detect(context.Background(), source, binary, cfg, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(result.Candidates) == 0 {
+				t.Fatal("enabled detector produced no candidates")
+			}
+			for _, candidate := range result.Candidates {
+				if candidate.Source != tc.source {
+					t.Fatal("disabled detector contributed a candidate")
+				}
+			}
+			if !tc.line && result.Diagnostics.LineCount != 0 {
+				t.Fatal("line detector still ran")
+			}
+			if !tc.outline && (len(result.Diagnostics.Contours.Candidates) != 0 || result.Diagnostics.Geometry.ReferenceCount != 0) {
+				t.Fatal("outline detector still ran")
+			}
+		})
+	}
+	cfg := config.Default()
+	cfg.Detectors = config.Detectors{}
+	if _, err := checkbox.Detect(context.Background(), source, binary, cfg, false); err == nil {
+		t.Fatal("accepted both detectors disabled")
+	}
+}

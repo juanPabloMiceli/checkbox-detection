@@ -79,3 +79,15 @@ func (d *Detector) Process(ctx context.Context, data []byte) (DetectionResult, e
 	}
 	return result, nil
 }
+
+// DetectorConfig returns a value copy; HTTP overrides never modify shared defaults.
+func (d *Detector) DetectorConfig() config.Config { return d.config }
+
+func (d *Detector) ProcessWithSettings(ctx context.Context, data []byte, settings config.DetectionSettings) (DetectionResult, error) {
+	cfg, err := d.config.ApplySettings(settings)
+	if err != nil {
+		return DetectionResult{}, err
+	}
+	requestDetector := Detector{config: cfg}
+	return requestDetector.Process(ctx, data)
+}

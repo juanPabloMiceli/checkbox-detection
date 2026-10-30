@@ -14,13 +14,23 @@ type PipelineResult struct {
 }
 
 func Detect(ctx context.Context, source, binary gocv.Mat, cfg config.Config, diagnostics bool) (PipelineResult, error) {
-	contours, err := DetectCandidates(ctx, binary, cfg.Contour, diagnostics)
-	if err != nil {
+	if err := cfg.Validate(); err != nil {
 		return PipelineResult{}, err
 	}
-	lines, err := DetectLineCandidates(ctx, binary, cfg.Line, cfg.Interior)
-	if err != nil {
-		return PipelineResult{}, err
+	var contours ContourResult
+	var lines []Candidate
+	var err error
+	if cfg.Detectors.OutlineEnabled {
+		contours, err = DetectCandidates(ctx, binary, cfg.Contour, diagnostics)
+		if err != nil {
+			return PipelineResult{}, err
+		}
+	}
+	if cfg.Detectors.LineEnabled {
+		lines, err = DetectLineCandidates(ctx, binary, cfg.Line, cfg.Interior)
+		if err != nil {
+			return PipelineResult{}, err
+		}
 	}
 	combined := append(append([]Candidate(nil), contours.Candidates...), lines...)
 	geometry, err := FilterByDocumentGeometry(ctx, combined, contours.Candidates, binary, cfg, diagnostics)

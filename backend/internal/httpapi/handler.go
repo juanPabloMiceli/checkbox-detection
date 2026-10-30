@@ -32,6 +32,7 @@ func NewHandler(processor Processor, options Options) (*Handler, error) {
 	handler := &Handler{admission: newAdmission(options), options: options}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/detect", handler.detect(processor))
+	mux.HandleFunc("/detect/settings", settingsHandler(processor))
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { writeStatus(w, http.StatusOK, "ok") })
 	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
 		if err := handler.admission.available(r.Context()); err != nil {
@@ -91,7 +92,26 @@ func (h *Handler) detect(processor Processor) http.HandlerFunc {
 
 		ctx, cancel := context.WithTimeout(r.Context(), h.options.ProcessTimeout)
 		defer cancel()
-		result, err := processor.Process(ctx, data)
+		var result checkbox.DetectionResult
+		if values, exists := r.PostForm["settings"]; exists {
+			configurable, ok := processor.(configurableProcessor)
+			if !ok {
+				writeError(w, http.StatusBadRequest, "per-request settings are not supported")
+				return
+			}
+			if len(values) != 1 {
+				writeError(w, http.StatusBadRequest, "provide settings exactly once")
+				return
+			}
+			settings, settingsErr := configurable.DetectorConfig().DecodeSettings([]byte(values[0]))
+			if settingsErr != nil {
+				writeError(w, http.StatusBadRequest, settingsErr.Error())
+				return
+			}
+			result, err = configurable.ProcessWithSettings(ctx, data, settings)
+		} else {
+			result, err = processor.Process(ctx, data)
+		}
 		if err == nil {
 			err = ctx.Err()
 		}

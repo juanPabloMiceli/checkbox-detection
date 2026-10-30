@@ -44,7 +44,7 @@ field and raw bodies with `Content-Type: image/png` or `image/jpeg` also work.
 Let the browser set the multipart boundary when using FormData.
 
 ```json
-{"boxes":[{"bbox":[10,20,40,60],"is_checked":true}]}
+{ "boxes": [{ "bbox": [10, 20, 40, 60], "is_checked": true }] }
 ```
 
 Bounds are `[left, top, right, bottom]` in original-image pixels; right and bottom
@@ -83,6 +83,42 @@ The native server defaults to one active request and a two-second queue wait;
 startup flags override these. A capacity slot covers upload reading through
 response writing. Cancellation is checked between stages and inside processing
 loops; native OpenCV calls finish before releasing their slot.
+
+## Per-request detection settings
+
+`GET /detect/settings` returns the active detector's twelve numeric defaults plus
+`outlineEnabled` and `lineEnabled` switches
+and their numeric limits as `{ "defaults": { ... }, "limits": { ... } }`. These
+reflect the loaded server configuration, not a second set of frontend constants.
+The response is not cached. Preprocessing and operational settings are not exposed.
+
+For a multipart detection request, optionally include a `settings` JSON field:
+
+```sh
+curl -F 'image=@testdata/im3.png' \
+  -F 'settings={"checkedInkRatio":0.2,"matchToleranceRatio":0.15}' \
+  http://localhost:8080/detect
+```
+
+Omitted fields retain server defaults. Ratios are fractions from 0 to 1, not UI
+percentages. Requests without `settings` keep the previous behavior. Overrides are
+validated and applied to an isolated configuration copy; they never change other
+requests or the defaults endpoint. Invalid ranges, nulls, unknown fields (including
+preprocessing fields), non-integer pixel/side counts, and malformed JSON return
+400 before image processing. Settings JSON is limited to 8192 bytes.
+
+Both detectors default to enabled. Set `outlineEnabled` or `lineEnabled` to false
+to skip that algorithm; at least one must remain enabled. Numeric controls for
+disabled detectors are inactive in the frontend. In line-only mode, document-size
+matching is inactive because no outline references are generated; background
+filtering, duplicate removal and checked-mark classification still apply.
+
+The supported numeric keys are `checkedInkRatio`, `minSidePx`, `maxSidePx`,
+`matchToleranceRatio`, `minRectangularity`, `finalIoUThreshold`, `minWidthPx`,
+`maxWidthPx`, `minEdgeSeparationPx`, `maxEdgeSeparationPx`, `minStrongSides`, and
+`minCoverage`. Minimum sizes cannot exceed their maximums. Shape strictness cannot
+exceed the server's reference-shape threshold; the defaults endpoint supplies that
+upper bound. Positive-only ratio limits include `exclusiveMin: true`.
 
 ## Detection approach
 

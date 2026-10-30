@@ -1,7 +1,8 @@
 {
+  "detectors": { "outlineEnabled": true, "lineEnabled": true },
   "contour": {
     "minRectangularity": 0.85,
-    "referenceMinRectangularity": 0.90
+    "referenceMinRectangularity": 0.9
   },
   "geometry": {
     "recoveryToleranceRatio": 0.12
