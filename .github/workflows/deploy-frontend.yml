@@ -1,0 +1,62 @@
+name: Deploy frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: frontend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      AWS_REGION: us-east-2
+      S3_BUCKET: jpmiceli-checkbox-detection-frontend
+      DISTRIBUTION_ID: E1OABMUQFPLKZI
+      BUILD_DIR: dist/checkbox-detection/browser
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.4'
+
+      - name: Build
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy
+        run: |
+          # Publish assets first, retaining older bundles for open browser tabs.
+          aws s3 sync "$BUILD_DIR/" "s3://$S3_BUCKET/" \
+            --exclude 'index.html' --exclude 'index.csr.html' \
+            --cache-control 'public,max-age=300'
+          aws s3 cp "$BUILD_DIR/index.html" "s3://$S3_BUCKET/index.html" \
+            --cache-control 'no-cache,no-store,must-revalidate'
+          aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION_ID" --paths '/*'
