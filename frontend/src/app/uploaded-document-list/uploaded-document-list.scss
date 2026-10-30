@@ -164,9 +164,8 @@
   display: block;
   max-width: 100%;
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 
   color: tokens.$text-primary;
   font-size: 0.8125rem;
@@ -185,9 +184,8 @@
 
 .document-detection-count {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 /* Status */
