@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'backend/**'
-      - '.github/workflows/deploy-backend.yml'
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
   workflow_dispatch:
 
 permissions:
@@ -32,7 +32,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: arn:aws:iam::594194277927:role/checkbox-backend-github-deploy
+          role-to-assume: arn:aws:iam::594194277927:role/github-deploy-role
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Build and push

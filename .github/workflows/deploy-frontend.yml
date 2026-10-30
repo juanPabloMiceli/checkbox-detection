@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'frontend/**'
+      - "frontend/**"
   workflow_dispatch:
 
 permissions:
@@ -34,11 +34,11 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: '1.4.4'
+          bun-version: "1.4.4"
 
       - name: Build
         run: |
@@ -47,7 +47,7 @@ jobs:
 
       - uses: aws-actions/configure-aws-credentials@v6
         with:
-          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          role-to-assume: arn:aws:iam::594194277927:role/github-deploy-role
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy
