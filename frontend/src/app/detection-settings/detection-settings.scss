@@ -86,6 +86,11 @@ legend {
   color: tokens.$text-muted;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
 }
 .setting-field {
   margin-bottom: 0.75rem;
@@ -166,13 +171,6 @@ input[aria-invalid='true'] {
   line-height: 1.5;
 }
 
-legend {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 0.5rem;
-}
 .detector-toggle {
   display: inline-flex;
   align-items: center;

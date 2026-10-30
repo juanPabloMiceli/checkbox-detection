@@ -1,29 +1,24 @@
-import {
-  Component,
-  effect,
-  HostListener,
-  inject,
-  input,
-  output,
-} from "@angular/core";
-import {
-  SETTING_GROUPS,
-  SettingField,
-  DetectorKey,
-} from "../models/detection-settings.model";
-import { DetectionSettingsStore } from "../services/detection-settings.service";
+import { Component, effect, HostListener, inject, input, output } from '@angular/core';
+import { SETTING_GROUPS, SettingField, DetectorKey } from '../models/detection-settings.model';
+import { DetectionSettingsStore } from '../services/detection-settings.service';
 
 @Component({
-  selector: "app-detection-settings",
+  selector: 'app-detection-settings',
   standalone: true,
-  templateUrl: "./detection-settings.html",
-  styleUrl: "./detection-settings.scss",
+  templateUrl: './detection-settings.html',
+  styleUrl: './detection-settings.scss',
 })
 export class DetectionSettingsPanel {
   readonly visible = input(true);
   readonly processingDisabled = input(false);
+
   readonly processRequested = output<void>();
+  readonly closed = output<void>();
+
   private activeHelp: HTMLElement | null = null;
+  readonly settings = inject(DetectionSettingsStore);
+
+  readonly groups = SETTING_GROUPS;
 
   constructor() {
     effect(() => {
@@ -38,10 +33,7 @@ export class DetectionSettingsPanel {
     this.activeHelp = tooltip;
     const anchor = trigger.getBoundingClientRect();
     const box = tooltip.getBoundingClientRect();
-    const left = Math.max(
-      8,
-      Math.min(anchor.right - box.width, window.innerWidth - box.width - 8),
-    );
+    const left = Math.max(8, Math.min(anchor.right - box.width, window.innerWidth - box.width - 8));
     const top =
       anchor.bottom + box.height + 8 <= window.innerHeight
         ? anchor.bottom + 8
@@ -50,16 +42,13 @@ export class DetectionSettingsPanel {
     tooltip.style.top = `${top}px`;
   }
 
-  @HostListener("window:resize")
-  @HostListener("document:keydown.escape")
+  @HostListener('window:resize')
+  @HostListener('document:keydown.escape')
   hideHelp() {
     this.activeHelp?.hidePopover();
     this.activeHelp = null;
   }
 
-  readonly settings = inject(DetectionSettingsStore);
-  readonly closed = output<void>();
-  readonly groups = SETTING_GROUPS;
   toggleDetector(key: DetectorKey, event: Event) {
     this.hideHelp();
     this.settings.setDetector(key, (event.target as HTMLInputElement).checked);
@@ -67,14 +56,16 @@ export class DetectionSettingsPanel {
 
   display(field: SettingField) {
     const value = this.settings.draft()[field.key];
-    return typeof value === "number"
-      ? Number((value * (field.unit === "%" ? 100 : 1)).toPrecision(12))
+    return typeof value === 'number'
+      ? Number((value * (field.unit === '%' ? 100 : 1)).toPrecision(12))
       : null;
   }
-  bound(field: SettingField, bound: "min" | "max") {
+
+  bound(field: SettingField, bound: 'min' | 'max') {
     const value = this.settings.definition()?.limits[field.key][bound];
-    return value === undefined ? null : value * (field.unit === "%" ? 100 : 1);
+    return value === undefined ? null : value * (field.unit === '%' ? 100 : 1);
   }
+
   processOnEnter(event: Event) {
     event.preventDefault();
     event.stopPropagation();
@@ -94,9 +85,9 @@ export class DetectionSettingsPanel {
     const input = event.target as HTMLInputElement;
     this.settings.update(
       field.key,
-      input.value === "" || !Number.isFinite(input.valueAsNumber)
+      input.value === '' || !Number.isFinite(input.valueAsNumber)
         ? null
-        : input.valueAsNumber / (field.unit === "%" ? 100 : 1),
+        : input.valueAsNumber / (field.unit === '%' ? 100 : 1),
     );
   }
 }

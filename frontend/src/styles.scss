@@ -6,7 +6,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --header-height: 5rem;
 }
 
 * {
@@ -21,13 +20,6 @@ body {
 
 body {
   font-family: inherit;
-  overflow: hidden;
-}
-
-app-root {
-  display: grid;
-  grid-template-rows: var(--header-height) minmax(0, 1fr);
-  height: 100dvh;
   overflow: hidden;
 }
 

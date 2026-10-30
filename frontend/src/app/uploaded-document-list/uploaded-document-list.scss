@@ -1,7 +1,6 @@
 @use '../../styles/controls';
 @use '../../styles/tokens';
 
-// The host replaces the list fragment inside the documents panel's flex layout.
 :host {
   display: flex;
   flex-direction: column;
@@ -50,10 +49,6 @@
   background: tokens.$primary-hover;
 }
 
-/* =========================================
-   DOCUMENTS LIST
-   ========================================= */
-
 .documents-list {
   display: flex;
   flex-direction: column;
@@ -100,8 +95,6 @@
   border-color: tokens.$selection-border;
 }
 
-/* Main document selection button */
-
 .document-select {
   outline: none;
   display: flex;
@@ -127,7 +120,10 @@
   border-radius: 0.6875rem;
 }
 
-/* Document icon */
+.document-select:focus-visible::after {
+  outline: 0.125rem solid tokens.$focus-ring;
+  outline-offset: -0.125rem;
+}
 
 .document-icon {
   display: grid;
@@ -148,8 +144,6 @@
   background: tokens.$primary-surface-hover;
   color: tokens.$primary;
 }
-
-/* Document metadata */
 
 .document-meta {
   display: flex;
@@ -188,8 +182,6 @@
   overflow-wrap: anywhere;
 }
 
-/* Status */
-
 .document-status {
   display: inline-flex;
   align-items: center;
@@ -220,8 +212,6 @@
   color: tokens.$danger;
 }
 
-/* Processing errors */
-
 .document-error {
   margin: 0;
   padding: 0.5rem 0.625rem;
@@ -234,10 +224,6 @@
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
-
-/* =========================================
-   DOCUMENT ACTIONS
-   ========================================= */
 
 .document-remove-button {
   position: absolute;
@@ -278,10 +264,6 @@
   outline-offset: 0.125rem;
 }
 
-/* =========================================
-   EMPTY DOCUMENT LIST
-   ========================================= */
-
 .documents-empty {
   padding: 1.5rem 0.75rem;
 
@@ -313,10 +295,7 @@
   }
 }
 
-.document-select:focus-visible::after {
-  outline: 0.125rem solid tokens.$focus-ring;
-  outline-offset: -0.125rem;
-}
+
 
 .process-all-button:disabled {
   opacity: 0.5;

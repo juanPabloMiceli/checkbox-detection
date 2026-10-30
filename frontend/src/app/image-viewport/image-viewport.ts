@@ -21,6 +21,45 @@ import { UploadedDocument } from '../models/uploaded_document.model';
   styleUrl: './image-viewport.scss',
 })
 export class ImageViewport {
+  imageUrl = input.required<string>();
+  detections = input.required<Detection[]>();
+  status = input.required<UploadedDocument['status']>();
+  selectedDetectionIndex = input.required<number | null>();
+  showBoundingBoxes = input.required<boolean>();
+  readonly settingsOpen = input(false);
+  readonly processingDisabled = input(false);
+
+  readonly settingsToggled = output<void>();
+  readonly processRequested = output<void>();
+  readonly detectionSelected = output<number>();
+  readonly selectionCleared = output<void>();
+  readonly annotationsToggled = output<void>();
+
+  imageStage = viewChild<ElementRef<HTMLElement>>('imageStage');
+  imageWrapper = viewChild<ElementRef<HTMLElement>>('imageWrapper');
+  private resizeObserver?: ResizeObserver;
+  private readonly destroyRef = inject(DestroyRef);
+
+  zoom = signal(1);
+  readonly minZoom = 0.5;
+  readonly maxZoom = 4;
+  readonly zoomStep = 0.25;
+  readonly inspectionZoom = 2;
+  fitScale = signal(1);
+  displayWidth = computed(() => this.imageWidth() * this.fitScale() * this.zoom());
+  displayHeight = computed(() => this.imageHeight() * this.fitScale() * this.zoom());
+  zoomPercentage = computed(() => Math.round(this.zoom() * 100));
+  imageError = signal(false);
+  imageWidth = signal(0);
+  imageHeight = signal(0);
+  selectedDetection = computed(() => {
+    const index = this.selectedDetectionIndex();
+    if (index === null) {
+      return null;
+    }
+    return this.detections()[index] ?? null;
+  });
+
   constructor() {
     effect(() => {
       this.imageUrl();
@@ -54,24 +93,6 @@ export class ImageViewport {
     });
   }
 
-  zoom = signal(1);
-
-  readonly minZoom = 0.5;
-  readonly maxZoom = 4;
-  readonly zoomStep = 0.25;
-  readonly inspectionZoom = 2;
-
-  imageStage = viewChild<ElementRef<HTMLElement>>('imageStage');
-  imageWrapper = viewChild<ElementRef<HTMLElement>>('imageWrapper');
-
-  fitScale = signal(1);
-
-  displayWidth = computed(() => this.imageWidth() * this.fitScale() * this.zoom());
-
-  displayHeight = computed(() => this.imageHeight() * this.fitScale() * this.zoom());
-
-  zoomPercentage = computed(() => Math.round(this.zoom() * 100));
-
   zoomIn() {
     this.zoom.update((current) => Math.min(this.maxZoom, current + this.zoomStep));
   }
@@ -83,10 +104,6 @@ export class ImageViewport {
   resetZoom() {
     this.zoom.set(1);
   }
-
-  private resizeObserver?: ResizeObserver;
-
-  private readonly destroyRef = inject(DestroyRef);
 
   private updateFitScale() {
     const stage = this.imageStage()?.nativeElement;
@@ -149,33 +166,6 @@ export class ImageViewport {
     });
   }
 
-  imageUrl = input.required<string>();
-  detections = input.required<Detection[]>();
-  status = input.required<UploadedDocument['status']>();
-  selectedDetectionIndex = input.required<number | null>();
-  showBoundingBoxes = input.required<boolean>();
-
-  readonly settingsOpen = input(false);
-  readonly processingDisabled = input(false);
-  readonly settingsToggled = output<void>();
-  readonly processRequested = output<void>();
-  readonly detectionSelected = output<number>();
-  readonly selectionCleared = output<void>();
-  readonly annotationsToggled = output<void>();
-
-  imageError = signal(false);
-
-  imageWidth = signal(0);
-  imageHeight = signal(0);
-
-  selectedDetection = computed(() => {
-    const index = this.selectedDetectionIndex();
-    if (index === null) {
-      return null;
-    }
-    return this.detections()[index] ?? null;
-  });
-
   inspectSelection() {
     this.zoom.update((current) => Math.max(current, this.inspectionZoom));
   }
@@ -215,19 +205,17 @@ export class ImageViewport {
 
     if (newZoom === oldZoom) return;
 
-    // Posición del cursor relativa a la imagen actual.
     const rect = wrapper.getBoundingClientRect();
 
     const relativeX = (event.clientX - rect.left) / rect.width;
     const relativeY = (event.clientY - rect.top) / rect.height;
 
-    // Guardamos el punto que queremos mantener fijo.
     const anchorX = event.clientX;
     const anchorY = event.clientY;
 
     this.zoom.set(newZoom);
 
-    // Esperamos a que Angular actualice el tamaño del wrapper.
+    // Wait for the resized wrapper before restoring the point under the cursor.
     requestAnimationFrame(() => {
       const newRect = wrapper.getBoundingClientRect();
 

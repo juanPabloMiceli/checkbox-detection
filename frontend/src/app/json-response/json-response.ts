@@ -20,7 +20,6 @@ export class JsonResponse {
       .split('\n')
       .map((line) => {
         const tokens: JsonToken[] = [];
-        // Render text through interpolation, never injected HTML.
         const pattern =
           /"(?:\\.|[^"\\])*"|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[^"\w\d-]+/g;
         for (const match of line.matchAll(pattern)) {

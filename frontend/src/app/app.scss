@@ -17,10 +17,6 @@
   color: tokens.$text-primary;
 }
 
-/* =========================================
-   HEADER
-   ========================================= */
-
 .app-header {
   display: flex;
   align-items: center;
@@ -54,10 +50,6 @@
   white-space: nowrap;
 }
 
-/* =========================================
-   MAIN WORKSPACE
-   ========================================= */
-
 .workspace {
   display: grid;
   grid-template-columns: clamp(14rem, 17vw, 16rem) minmax(0, 1fr);
@@ -82,10 +74,6 @@
 
   overflow: hidden;
 }
-
-/* =========================================
-   DOCUMENTS PANEL
-   ========================================= */
 
 .documents-panel {
   padding: 1rem;
@@ -121,10 +109,6 @@
   white-space: nowrap;
 }
 
-/* =========================================
-   VIEWER PANEL
-   ========================================= */
-
 .viewer-panel {
   display: flex;
   flex-direction: column;
@@ -145,10 +129,6 @@
   margin: 0;
   font-size: 0.875rem;
 }
-
-/* =========================================
-   TOAST
-   ========================================= */
 
 .toast {
   position: fixed;

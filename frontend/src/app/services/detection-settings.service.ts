@@ -1,4 +1,5 @@
 import { afterNextRender, computed, inject, Injectable, signal } from '@angular/core';
+import { finalize } from 'rxjs';
 import { DetectionService } from './detection.service';
 import {
   DetectionSettings,
@@ -75,31 +76,31 @@ export class DetectionSettingsStore {
     if (this.loading()) return;
     this.loading.set(true);
     this.loadError.set(null);
-    this.api.getSettings().subscribe({
-      next: (definition) => {
-        // Reject incomplete responses rather than silently showing invented defaults.
-        if (
-          typeof definition?.defaults?.outlineEnabled !== 'boolean' ||
-          typeof definition?.defaults?.lineEnabled !== 'boolean' ||
-          !this.fields.every(
-            (field) =>
-              Number.isFinite(definition?.defaults?.[field.key]) &&
-              Number.isFinite(definition?.limits?.[field.key]?.min) &&
-              Number.isFinite(definition?.limits?.[field.key]?.max),
-          )
-        ) {
-          this.loadError.set('The server returned incomplete detection settings.');
-        } else {
-          this.definition.set(definition);
-          this.applyDefaults(definition.defaults);
-        }
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loadError.set('Could not load detection settings. Retry to enable processing.');
-        this.loading.set(false);
-      },
-    });
+    this.api
+      .getSettings()
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (definition) => {
+          if (
+            typeof definition?.defaults?.outlineEnabled !== 'boolean' ||
+            typeof definition?.defaults?.lineEnabled !== 'boolean' ||
+            !this.fields.every(
+              (field) =>
+                Number.isFinite(definition?.defaults?.[field.key]) &&
+                Number.isFinite(definition?.limits?.[field.key]?.min) &&
+                Number.isFinite(definition?.limits?.[field.key]?.max),
+            )
+          ) {
+            this.loadError.set('The server returned incomplete detection settings.');
+          } else {
+            this.definition.set(definition);
+            this.applyDefaults(definition.defaults);
+          }
+        },
+        error: () => {
+          this.loadError.set('Could not load detection settings. Retry to enable processing.');
+        },
+      });
   }
 
   update(key: SettingKey, value: number | null) {
