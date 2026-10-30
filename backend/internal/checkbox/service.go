@@ -83,6 +83,8 @@ func (d *Detector) Process(ctx context.Context, data []byte) (DetectionResult, e
 // DetectorConfig returns a value copy; HTTP overrides never modify shared defaults.
 func (d *Detector) DetectorConfig() config.Config { return d.config }
 
+// ProcessWithSettings runs detection with an isolated configuration copy, so
+// concurrent requests cannot alter each other's settings or the server defaults.
 func (d *Detector) ProcessWithSettings(ctx context.Context, data []byte, settings config.DetectionSettings) (DetectionResult, error) {
 	cfg, err := d.config.ApplySettings(settings)
 	if err != nil {

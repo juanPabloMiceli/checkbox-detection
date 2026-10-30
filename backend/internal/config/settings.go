@@ -38,6 +38,8 @@ type SettingsDefinition struct {
 	Limits   map[string]SettingLimit `json:"limits"`
 }
 
+// SettingsDefinition publishes defaults and UI bounds from the loaded configuration.
+// Ratios use fractions, and pixel dimensions refer to the original image.
 func (c Config) SettingsDefinition() SettingsDefinition {
 	limits := map[string]SettingLimit{}
 	for _, key := range []string{"minSidePx", "maxSidePx", "minWidthPx", "maxWidthPx", "minEdgeSeparationPx", "maxEdgeSeparationPx"} {
@@ -59,6 +61,8 @@ func (c Config) SettingsDefinition() SettingsDefinition {
 	}, Limits: limits}
 }
 
+// ApplySettings validates overrides against the published bounds and returns a
+// configuration copy. The receiver and its preprocessing settings are unchanged.
 func (c Config) ApplySettings(s DetectionSettings) (Config, error) {
 	// Check the same bounds published to the frontend.
 	values := map[string]float64{
@@ -100,6 +104,8 @@ func (c Config) ApplySettings(s DetectionSettings) (Config, error) {
 	return c, c.Validate()
 }
 
+// DecodeSettings merges a partial JSON object over server defaults and validates
+// the result. Unknown fields, nulls, trailing values, and oversized input are rejected.
 func (c Config) DecodeSettings(data []byte) (DetectionSettings, error) {
 	data = bytes.TrimSpace(data)
 	if len(data) == 0 || len(data) > 8192 || data[0] != '{' {

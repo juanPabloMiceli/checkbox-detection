@@ -53,6 +53,9 @@ func newAdmission(options Options) *admission {
 
 func (a *admission) close() { a.once.Do(func() { close(a.draining) }) }
 
+// acquire reserves an active processing slot or waits in the bounded queue.
+// On success the caller must invoke the returned release function exactly once,
+// after native processing finishes even if the request context is canceled.
 func (a *admission) acquire(ctx context.Context) (func(), error) {
 	if err := a.available(ctx); err != nil {
 		return nil, err
@@ -96,6 +99,8 @@ func (a *admission) available(ctx context.Context) error {
 	}
 }
 
+// finishAcquire rechecks cancellation and shutdown after taking a slot, releasing
+// it immediately if admission raced with either event.
 func (a *admission) finishAcquire(ctx context.Context) (func(), error) {
 	release := func() { <-a.active }
 	if err := a.available(ctx); err != nil {

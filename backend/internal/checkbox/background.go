@@ -91,6 +91,9 @@ func FilterByBackground(ctx context.Context, source gocv.Mat, candidates []Candi
 	return kept, stats, ctx.Err()
 }
 
+// inspectBackground rejects a candidate when opposite exterior strips are dark
+// without a contrasting outline. Strips with insufficient visible area are ignored;
+// the returned measurements use top, bottom, left, right order.
 func inspectBackground(gray gocv.Mat, candidate Candidate, stats BackgroundStats, cfg config.Background) (BackgroundRejection, bool) {
 	evidence := BackgroundRejection{Candidate: candidate}
 	rect := candidate.Bounds
@@ -136,9 +139,9 @@ func inspectBackground(gray gocv.Mat, candidate Candidate, stats BackgroundStats
 	return evidence, reject
 }
 
-// Find the darkest pixel in a narrow perpendicular band at each edge position,
-// then take their median. This tolerates inner/outer border measurements and
-// resists a few extending checkmark strokes or adjacent characters.
+// borderBrightness takes the median of the darkest pixels in narrow bands
+// perpendicular to a side (top, bottom, left, right indexed 0 through 3). This
+// tolerates inner/outer borders and isolated checkmarks or adjacent characters.
 func borderBrightness(gray gocv.Mat, rect image.Rectangle, side int, cfg config.Background) float64 {
 	band := max(cfg.BorderMinSearchRadiusPx, min(rect.Dx(), rect.Dy())/cfg.BorderSearchRadiusDivisor)
 	horizontal := side < 2
@@ -168,6 +171,8 @@ func borderBrightness(gray gocv.Mat, rect image.Rectangle, side int, cfg config.
 	return histogramQuantile(histogram, end-start, 0.5)
 }
 
+// histogramQuantile returns the first brightness bin reaching the requested
+// cumulative fraction of count. It returns zero if no bin reaches that rank.
 func histogramQuantile(histogram [256]int, count int, quantile float64) float64 {
 	target, cumulative := max(1, int(math.Ceil(float64(count)*quantile))), 0
 	for value, frequency := range histogram {

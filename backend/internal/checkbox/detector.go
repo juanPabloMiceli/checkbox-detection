@@ -20,6 +20,8 @@ type RejectionStats struct {
 	Border         int `json:"border"`
 }
 
+// DetectCandidates proposes convex four-corner outlines from a binary image.
+// It borrows the matrix and closes native contour and approximation allocations.
 func DetectCandidates(ctx context.Context, binary gocv.Mat, cfg config.Contour, diagnostics bool) (ContourResult, error) {
 	var result ContourResult
 	if err := ctx.Err(); err != nil {
@@ -50,7 +52,6 @@ func DetectCandidates(ctx context.Context, binary gocv.Mat, cfg config.Contour, 
 
 		perimeter := gocv.ArcLength(contour, true)
 
-		// Approximate the contour with a polygon.
 		approx := gocv.ApproxPolyDP(
 			contour,
 			cfg.ApproximationEpsilonRatio*perimeter,
@@ -99,6 +100,8 @@ func DetectCandidates(ctx context.Context, binary gocv.Mat, cfg config.Contour, 
 	return result, ctx.Err()
 }
 
+// hasCheckboxBorder requires enough ink-covered sides while ignoring corners.
+// A small search neighborhood tolerates imperfect contour coordinates.
 func hasCheckboxBorder(binary gocv.Mat, rect image.Rectangle, cfg config.ContourBorder) bool {
 	w, h := rect.Dx(), rect.Dy()
 
@@ -175,7 +178,6 @@ func hasCheckboxBorder(binary gocv.Mat, rect image.Rectangle, cfg config.Contour
 	left := verticalCoverage(rect.Min.X)
 	right := verticalCoverage(rect.Max.X - 1)
 
-	// Allow one damaged or partially missing border.
 	sides := []float64{top, bottom, left, right}
 
 	strongSides := 0
@@ -189,6 +191,8 @@ func hasCheckboxBorder(binary gocv.Mat, rect image.Rectangle, cfg config.Contour
 	return strongSides >= cfg.MinStrongSides
 }
 
+// isConvexQuad requires four cyclically ordered points with nonzero turns in
+// the same direction; collinear corners are rejected.
 func isConvexQuad(points []image.Point) bool {
 	var sign int64
 
@@ -218,6 +222,8 @@ func isConvexQuad(points []image.Point) bool {
 	return true
 }
 
+// orderCorners returns four points clockwise in image coordinates, starting
+// at the topmost point (leftmost on a tie). It panics unless given four points.
 func orderCorners(points []image.Point) [4]image.Point {
 	if len(points) != 4 {
 		panic("orderCorners requires exactly four points")

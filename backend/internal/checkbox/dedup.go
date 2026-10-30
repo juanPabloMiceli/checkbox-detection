@@ -27,8 +27,8 @@ func intersectionOverUnion(a, b image.Rectangle) float64 {
 	return float64(intersectionArea) / float64(unionArea)
 }
 
-// Prefer larger bounding boxes, which generally keeps outer borders. Run
-// geometry/background filtering first so oversized outliers cannot suppress boxes.
+// deduplicate prefers larger bounding boxes, which generally keeps outer borders.
+// Filter geometry and background first so oversized outliers cannot suppress boxes.
 func deduplicate(ctx context.Context, candidates []Candidate, iouThreshold float64, diagnostics bool) (DedupResult, error) {
 	var result DedupResult
 	if err := ctx.Err(); err != nil {
@@ -43,7 +43,7 @@ func deduplicate(ctx context.Context, candidates []Candidate, iouThreshold float
 		if rectangleArea(a.Bounds) != rectangleArea(b.Bounds) {
 			return rectangleArea(a.Bounds) > rectangleArea(b.Bounds)
 		}
-		return candidateLess(a, b)
+		return candidatePrecedes(a, b)
 	})
 	for _, candidate := range sorted {
 		if err := ctx.Err(); err != nil {
@@ -66,13 +66,13 @@ func deduplicate(ctx context.Context, candidates []Candidate, iouThreshold float
 			result.Candidates = append(result.Candidates, candidate)
 		}
 	}
-	sort.Slice(result.Candidates, func(i, j int) bool { return candidateLess(result.Candidates[i], result.Candidates[j]) })
+	sort.Slice(result.Candidates, func(i, j int) bool { return candidatePrecedes(result.Candidates[i], result.Candidates[j]) })
 	return result, ctx.Err()
 }
 
-// Equal-area proposals use a total geometric order, then source and measured
-// corners. The winner no longer depends on sort internals or input permutation.
-func candidateLess(a, b Candidate) bool {
+// candidatePrecedes compares position and extent, then source and measured
+// corners and rectangularity to break ties independently of input order.
+func candidatePrecedes(a, b Candidate) bool {
 	av := [...]int{a.Bounds.Min.Y, a.Bounds.Min.X, a.Bounds.Max.Y, a.Bounds.Max.X, int(a.Source)}
 	bv := [...]int{b.Bounds.Min.Y, b.Bounds.Min.X, b.Bounds.Max.Y, b.Bounds.Max.X, int(b.Source)}
 	for i := range av {

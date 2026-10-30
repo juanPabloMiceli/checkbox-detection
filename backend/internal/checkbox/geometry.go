@@ -34,7 +34,7 @@ func FilterByDocumentGeometry(ctx context.Context, candidates, references []Cand
 		return result, err
 	}
 	result.ReferenceCount, result.ReferenceRejections = len(seeds), rejectedReferences
-	result.Clusters, err = learnGeometry(ctx, seeds, cfg.Geometry)
+	result.Clusters, err = learnCheckboxSizeClusters(ctx, seeds, cfg.Geometry)
 	if err != nil {
 		return GeometryResult{}, err
 	}
@@ -52,8 +52,8 @@ func FilterByDocumentGeometry(ctx context.Context, candidates, references []Cand
 	return result, ctx.Err()
 }
 
-// Filter weak references before deduplication so a larger weak outer contour
-// cannot suppress a strong inner contour that should teach the model.
+// selectGeometryReferences filters weak references before deduplication, so a
+// larger weak outer contour cannot suppress a strong inner learning reference.
 func selectGeometryReferences(ctx context.Context, references []Candidate, binary gocv.Mat, cfg config.Config, diagnostics bool) ([]Candidate, []CandidateRejection, error) {
 	var eligible, seeds []Candidate
 	var rejected []CandidateRejection
@@ -91,22 +91,26 @@ func selectGeometryReferences(ctx context.Context, references []Candidate, binar
 	return seeds, rejected, nil
 }
 
+// referenceRejection returns the first failed check for an outline used to learn
+// document sizes. An empty reason means it is suitable as a reference.
 func referenceRejection(candidate Candidate, binary gocv.Mat, cfg config.Config) RejectionReason {
 	bounds := candidate.Bounds
 	switch {
 	case bounds.Empty() || !bounds.In(image.Rect(0, 0, binary.Cols(), binary.Rows())):
 		return RejectReferenceBounds
-	case !strongRectangleBorder(binary, bounds, cfg.Geometry.ReferenceBorder):
+	case !hasStrongBordersOnAllSides(binary, bounds, cfg.Geometry.ReferenceBorder):
 		return RejectReferenceBorder
 	case !hasOpenInterior(binary, bounds, cfg.Interior):
 		return RejectReferenceInterior
-	case embeddedInInk(binary, bounds, cfg.Exterior):
+	case hasInkOnOppositeExteriorSides(binary, bounds, cfg.Exterior):
 		return RejectReferenceExterior
 	default:
 		return ""
 	}
 }
 
+// geometryRejection checks a proposal against learned sizes. Without a model,
+// established candidates pass but weak contours needing size support do not.
 func geometryRejection(candidate Candidate, clusters []GeometryCluster, binary gocv.Mat, cfg config.Config) RejectionReason {
 	recovery := candidate.needsGeometrySupport(cfg.Contour.ReferenceMinRectangularity)
 	if len(clusters) == 0 {
@@ -115,7 +119,7 @@ func geometryRejection(candidate Candidate, clusters []GeometryCluster, binary g
 		}
 		return ""
 	}
-	if embeddedInInk(binary, candidate.Bounds, cfg.Exterior) {
+	if hasInkOnOppositeExteriorSides(binary, candidate.Bounds, cfg.Exterior) {
 		return RejectExteriorInk
 	}
 	tolerance := cfg.Geometry.MatchToleranceRatio
@@ -130,12 +134,13 @@ func geometryRejection(candidate Candidate, clusters []GeometryCluster, binary g
 	return RejectGeometryMismatch
 }
 
-// White lettering in a dark section bar can have a closed rectangular contour.
+// hasInkOnOppositeExteriorSides detects shapes embedded in solid ink, such as
+// white lettering in a dark section bar.
 // Unlike an outlined box, that dark region continues beyond opposite borders.
 // Sample a full box dimension beyond each side: narrower strips confuse thick
 // borders and nearby boxes with a solid background. One adjoining form rule or
 // a checkmark extending outside the box is allowed.
-func embeddedInInk(binary gocv.Mat, rect image.Rectangle, cfg config.Exterior) bool {
+func hasInkOnOppositeExteriorSides(binary gocv.Mat, rect image.Rectangle, cfg config.Exterior) bool {
 	if binary.Empty() || rect.Empty() {
 		return false
 	}
@@ -158,6 +163,8 @@ func embeddedInInk(binary gocv.Mat, rect image.Rectangle, cfg config.Exterior) b
 	return (dark[0] && dark[1]) || (dark[2] && dark[3])
 }
 
+// matchesGeometry compares width and height independently, allowing the larger
+// of the proportional tolerance and the minimum pixel tolerance for each axis.
 func matchesGeometry(candidate Candidate, cluster GeometryCluster, tolerance float64, minTolerance int) bool {
 	w, h := float64(candidate.Bounds.Dx()), float64(candidate.Bounds.Dy())
 	return w > 0 && h > 0 &&
@@ -165,9 +172,10 @@ func matchesGeometry(candidate Candidate, cluster GeometryCluster, tolerance flo
 		math.Abs(h-cluster.Height) <= math.Max(float64(minTolerance), tolerance*cluster.Height)
 }
 
-func learnGeometry(ctx context.Context, seeds []Candidate, cfg config.Geometry) ([]GeometryCluster, error) {
-	// A small secondary component is allowed, but isolated shapes and weak
-	// clusters relative to the main mode cannot establish a document template.
+// learnCheckboxSizeClusters repeatedly selects the most-supported size group
+// and uses median dimensions as its center. Isolated and weak secondary groups
+// cannot establish a template. The input slice is not modified.
+func learnCheckboxSizeClusters(ctx context.Context, seeds []Candidate, cfg config.Geometry) ([]GeometryCluster, error) {
 	minSupport := cfg.MinClusterSupport
 	remaining := append([]Candidate(nil), seeds...)
 	var clusters []GeometryCluster
@@ -215,6 +223,8 @@ func learnGeometry(ctx context.Context, seeds []Candidate, cfg config.Geometry) 
 	return clusters, ctx.Err()
 }
 
+// medianDimension sorts a nonempty slice in place and returns its median.
+// An even-length slice uses the mean of the two middle dimensions.
 func medianDimension(values []int) float64 {
 	sort.Ints(values)
 	mid := len(values) / 2
@@ -224,9 +234,10 @@ func medianDimension(values []int) float64 {
 	return float64(values[mid])
 }
 
-// Use a narrow band normal to each side. Searching along a side as well would
-// bridge gaps in letters and make them look like continuous checkbox borders.
-func strongRectangleBorder(binary gocv.Mat, rect image.Rectangle, cfg config.ReferenceBorder) bool {
+// hasStrongBordersOnAllSides searches a narrow band normal to each side.
+// Searching along a side would bridge gaps in letters and make them look like
+// continuous checkbox borders. All four sides must meet the coverage threshold.
+func hasStrongBordersOnAllSides(binary gocv.Mat, rect image.Rectangle, cfg config.ReferenceBorder) bool {
 	if binary.Empty() || rect.Empty() || !rect.In(image.Rect(0, 0, binary.Cols(), binary.Rows())) {
 		return false
 	}

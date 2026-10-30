@@ -6,7 +6,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-// DetectionResult is the JSON response format required by the take-home.
+// DetectionResult contains checkbox bounds and checked states in original-image coordinates.
 type DetectionResult struct {
 	Boxes []Detection `json:"boxes"`
 }

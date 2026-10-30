@@ -9,15 +9,9 @@ import (
 	"gocv.io/x/gocv"
 )
 
-// DetectLineCandidates finds axis-aligned checkbox borders.
-//
-// Input:
-//   - binary: CV8UC1 image
-//   - foreground ink: 255
-//   - background: 0
-//
-// Output:
-//   - candidate rectangles with four pixel-coordinate corners
+// DetectLineCandidates pairs horizontal borders and verifies their vertical sides.
+// It borrows a CV8UC1 image with white ink on a black background. Returned bounds
+// use an exclusive maximum; corners identify the actual border pixels.
 func DetectLineCandidates(ctx context.Context, binary gocv.Mat, cfg config.Line, interior config.Interior) ([]Candidate, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -146,7 +140,7 @@ func DetectLineCandidates(ctx context.Context, binary gocv.Mat, cfg config.Line,
 }
 
 // extractLines applies morphological opening to retain
-// horizontal or vertical structures.
+// horizontal or vertical structures. The caller must close the returned matrix.
 func extractLines(binary gocv.Mat, size image.Point) gocv.Mat {
 	kernel := gocv.GetStructuringElement(
 		gocv.MorphRect,
@@ -165,6 +159,8 @@ func extractLines(binary gocv.Mat, size image.Point) gocv.Mat {
 	return result
 }
 
+// horizontalCoverage measures foreground ink along an inclusive horizontal
+// segment, ignoring pixels outside the image. Empty visible segments return zero.
 func horizontalCoverage(
 	binary gocv.Mat,
 	x0, x1, y int,
@@ -195,6 +191,8 @@ func horizontalCoverage(
 	return float64(count) / float64(total)
 }
 
+// verticalCoverage measures foreground ink along an inclusive vertical
+// segment, ignoring pixels outside the image. Empty visible segments return zero.
 func verticalCoverage(
 	binary gocv.Mat,
 	x, y0, y1 int,
@@ -225,6 +223,8 @@ func verticalCoverage(
 	return float64(count) / float64(total)
 }
 
+// hasOpenInterior excludes the border and rejects interiors too densely filled
+// with ink to resemble a checkbox. Sparse checkmarks can still pass.
 func hasOpenInterior(binary gocv.Mat, rect image.Rectangle, cfg config.Interior) bool {
 	w, h := rect.Dx(), rect.Dy()
 

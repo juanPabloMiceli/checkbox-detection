@@ -13,6 +13,8 @@ type PipelineResult struct {
 	Diagnostics *Diagnostics
 }
 
+// Detect combines enabled candidate generators, filters geometry and background,
+// then deduplicates. It borrows both matrices; diagnostics adds inspection data.
 func Detect(ctx context.Context, source, binary gocv.Mat, cfg config.Config, diagnostics bool) (PipelineResult, error) {
 	if err := cfg.Validate(); err != nil {
 		return PipelineResult{}, err

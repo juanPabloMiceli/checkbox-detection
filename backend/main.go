@@ -69,6 +69,9 @@ func run(ctx context.Context, addr, configPath string, options httpapi.Options, 
 	return serve(ctx, server, listener, handler, drainTimeout)
 }
 
+// serve stops admission before draining HTTP requests on cancellation. A fresh
+// shutdown context lets active native processing finish until drainTimeout;
+// expiration closes the remaining connections and returns an error.
 func serve(ctx context.Context, server *http.Server, listener net.Listener, handler *httpapi.Handler, drainTimeout time.Duration) error {
 	completed := make(chan error, 1)
 	go func() { completed <- server.Serve(listener) }()
