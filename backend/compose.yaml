@@ -1,0 +1,46 @@
+services:
+  api:
+    image: ${BACKEND_IMAGE:-checkbox-detector:local}
+    build:
+      context: .
+    init: true
+    restart: unless-stopped
+    command:
+      - -addr
+      - 0.0.0.0:8080
+      - -config
+      - /app/config.json
+      - -max-concurrent
+      - ${MAX_CONCURRENT:-2}
+      - -max-queued
+      - ${MAX_QUEUED:-4}
+      - -queue-timeout
+      - ${QUEUE_TIMEOUT:-15s}
+      - -process-timeout
+      - ${PROCESS_TIMEOUT:-60s}
+      - -shutdown-timeout
+      - ${SHUTDOWN_TIMEOUT:-120s}
+      - -opencv-threads
+      - ${OPENCV_THREADS:-1}
+    environment:
+      GOMAXPROCS: "2"
+    ports:
+      - "127.0.0.1:${API_PORT:-8080}:8080"
+    volumes:
+      - ./config.example.json:/app/config.json:ro
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=67108864,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: ${API_MEMORY_LIMIT:-2g}
+    cpus: ${API_CPUS:-2.0}
+    pids_limit: 128
+    stop_grace_period: 130s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
