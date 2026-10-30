@@ -1,0 +1,65 @@
+name: Deploy backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      AWS_REGION: us-east-2
+      REGISTRY: 594194277927.dkr.ecr.us-east-2.amazonaws.com
+      IMAGE: 594194277927.dkr.ecr.us-east-2.amazonaws.com/checkbox-detection/backend:${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+      INSTANCE_ID: i-054db4493fc491324
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::594194277927:role/checkbox-backend-github-deploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build and push
+        run: |
+          docker build --platform linux/amd64 -t "$IMAGE" backend
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$REGISTRY"
+          docker push "$IMAGE"
+
+      - name: Deploy through SSM
+        timeout-minutes: 15
+        run: |
+          jq -n --arg image "$IMAGE" --rawfile script backend/scripts/deploy.sh \
+            '{commands: [("bash -c " + ($script | @sh) + " -- " + ($image | @sh))], executionTimeout: ["600"]}' \
+            > "$RUNNER_TEMP/deploy-parameters.json"
+          command_id="$(aws ssm send-command --instance-ids "$INSTANCE_ID" \
+            --document-name AWS-RunShellScript --timeout-seconds 60 \
+            --parameters "file://$RUNNER_TEMP/deploy-parameters.json" \
+            --query Command.CommandId --output text)"
+
+          while true; do
+            status="$(aws ssm get-command-invocation --command-id "$command_id" \
+              --instance-id "$INSTANCE_ID" --query Status --output text 2>/dev/null || echo Pending)"
+            case "$status" in
+              Success|Failed|Cancelled|TimedOut) break ;;
+            esac
+            sleep 5
+          done
+          aws ssm get-command-invocation --command-id "$command_id" --instance-id "$INSTANCE_ID" \
+            --query '[StandardOutputContent,StandardErrorContent]' --output text
+          test "$status" = Success
