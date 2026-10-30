@@ -122,8 +122,10 @@ export class DocumentWorkspace implements OnDestroy {
         return 'The uploaded image is invalid.';
       case 413:
         return 'The image is too large.';
+      case 429:
+      case 502:
       case 503:
-        return 'The detection backend is not available yet. Please try again later.';
+        return 'The detection server is busy or temporarily unavailable. Please try again shortly.';
       case 500:
         return 'The detection server encountered an error.';
       default:
