@@ -2,6 +2,7 @@ import { computed, inject, Injectable, OnDestroy, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize, Subscription } from 'rxjs';
 import { UploadedDocument } from '../models/uploaded_document.model';
+import { DetectionSettingsStore } from './detection-settings.service';
 import { DetectionService } from './detection.service';
 
 // Provided by App so requests and object URLs live only as long as the workspace.
@@ -9,6 +10,7 @@ import { DetectionService } from './detection.service';
 export class DocumentWorkspace implements OnDestroy {
   private readonly detectionService = inject(DetectionService);
   private readonly activeRequests = new Map<number, Subscription>();
+  readonly settings = inject(DetectionSettingsStore);
   private nextDocumentId = 1;
 
   private readonly documentState = signal<UploadedDocument[]>([]);
@@ -46,7 +48,8 @@ export class DocumentWorkspace implements OnDestroy {
 
   processDocument(documentId: number) {
     const document = this.documents().find((doc) => doc.id === documentId);
-    if (!document || document.status === 'processing') return;
+    const settings = this.settings.snapshot();
+    if (!document || document.status === 'processing' || !settings) return;
 
     this.updateDocument(documentId, {
       detections: [],
@@ -55,7 +58,7 @@ export class DocumentWorkspace implements OnDestroy {
     });
 
     const subscription = this.detectionService
-      .detectCheckboxes(document.file)
+      .detectCheckboxes(document.file, settings)
       .pipe(finalize(() => this.activeRequests.delete(documentId)))
       .subscribe({
         next: (response) => {
@@ -119,6 +122,8 @@ export class DocumentWorkspace implements OnDestroy {
         return 'The uploaded image is invalid.';
       case 413:
         return 'The image is too large.';
+      case 503:
+        return 'The detection backend is not available yet. Please try again later.';
       case 500:
         return 'The detection server encountered an error.';
       default:

@@ -9,12 +9,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   flex-shrink: 0;
 
-  padding: 20px 12px;
-  border: 1px dashed tokens.$border-strong;
-  border-radius: 12px;
+  padding: 1.25rem 0.75rem;
+  border: 0.0625rem dashed tokens.$border-strong;
+  border-radius: 0.75rem;
 
   background: tokens.$surface-subtle;
   text-align: center;
@@ -38,7 +38,7 @@
 
 .upload-icon {
   color: tokens.$primary;
-  font-size: 26px;
+  font-size: 1.625rem;
   line-height: 1;
 }
 
@@ -48,33 +48,33 @@
 
 .upload-area label {
   color: tokens.$text-primary;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
 .upload-area p {
   margin: 0;
   color: tokens.$text-muted;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
 .upload-area input[type='file'] {
   display: block;
   width: 100%;
-  max-width: 240px;
+  max-width: 15rem;
   min-width: 0;
 
   color: tokens.$text-muted;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 
 .upload-area input[type='file']::file-selector-button {
-  padding: 8px 12px;
-  margin-right: 8px;
+  padding: 0.5rem 0.75rem;
+  margin-right: 0.5rem;
 
-  border: 1px solid tokens.$primary-border;
-  border-radius: 8px;
+  border: 0.0625rem solid tokens.$primary-border;
+  border-radius: 0.5rem;
 
   background: tokens.$primary-surface;
   color: tokens.$primary-hover;

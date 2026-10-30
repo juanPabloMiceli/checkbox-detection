@@ -1,0 +1,200 @@
+@use '../../styles/tokens';
+@use '../../styles/controls';
+:host {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+:host([hidden]) {
+  display: none;
+}
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  border: 0.0625rem solid tokens.$border;
+  border-radius: 0.625rem;
+  padding: 1rem;
+}
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+button {
+  @include controls.outlined-button();
+  padding: 0.4375rem 0.625rem;
+  color: tokens.$text-control;
+  font-size: 0.75rem;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 0.125rem solid tokens.$focus-ring;
+  outline-offset: 0.125rem;
+}
+input[type='number']:focus-visible {
+  outline-offset: -0.125rem;
+}
+
+.settings-note {
+  color: tokens.$text-muted;
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  margin: 0.625rem 0 0.875rem;
+}
+.close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: tokens.$text-control;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1;
+}
+.close:hover {
+  background: tokens.$surface-muted;
+}
+.settings-fields {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+  scrollbar-width: thin;
+  padding: 0 0.25rem 0.25rem 0;
+}
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.125rem;
+}
+legend {
+  padding: 0;
+  margin-bottom: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: tokens.$text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.setting-field {
+  margin-bottom: 0.75rem;
+}
+.setting-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.125rem;
+  font-size: 0.75rem;
+  color: tokens.$text-control;
+  margin-bottom: 0.3125rem;
+}
+.help {
+  display: inline-flex;
+}
+.help-button {
+  padding: 0 0.25rem;
+  border: 0;
+  background: transparent;
+  color: tokens.$primary;
+  cursor: help;
+}
+.tooltip {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  border: 0;
+  width: min(16.25rem, calc(100vw - 1rem));
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  background: tokens.$text-primary;
+  color: tokens.$surface;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  box-shadow: 0 0.25rem 0.75rem #0002;
+  pointer-events: none;
+}
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.4375rem 0.5625rem;
+  border: 0.0625rem solid tokens.$border-control;
+  border-radius: 0.375rem;
+  background: tokens.$surface;
+  color: tokens.$text-primary;
+  font-size: 0.8125rem;
+}
+input[aria-invalid='true'] {
+  border-color: tokens.$danger;
+}
+.unit {
+  min-width: 1.75rem;
+  color: tokens.$text-muted;
+  font-size: 0.6875rem;
+}
+.error {
+  display: block;
+  color: tokens.$danger-text;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+.settings-footer {
+  flex-shrink: 0;
+  padding-top: 0.75rem;
+  border-top: 0.0625rem solid tokens.$border;
+}
+
+.group-description {
+  margin: -0.375rem 0 0.75rem;
+  color: tokens.$text-muted;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+.detector-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  flex-shrink: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.625rem;
+  cursor: pointer;
+}
+.detector-toggle input {
+  width: 0.875rem;
+  height: 0.875rem;
+  padding: 0;
+  margin: 0;
+  accent-color: tokens.$primary;
+  cursor: pointer;
+}
+.setting-field.inactive {
+  opacity: 0.55;
+}
+input:disabled {
+  background: tokens.$surface-muted;
+  cursor: not-allowed;
+}

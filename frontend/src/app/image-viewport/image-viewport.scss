@@ -10,6 +10,7 @@
 }
 
 .document-canvas {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -25,8 +26,8 @@
 
   overflow: auto;
   background: tokens.$surface-muted;
-  border: 1px solid tokens.$border;
-  border-radius: 10px;
+  border: 0.0625rem solid tokens.$border;
+  border-radius: 0.625rem;
 
   scrollbar-width: thin;
   scrollbar-color: tokens.$scrollbar-thumb transparent;
@@ -42,7 +43,7 @@
   min-width: 100%;
   min-height: 100%;
 
-  padding: 16px;
+  padding: 1rem;
 }
 
 .image-wrapper {
@@ -53,7 +54,7 @@
   height: 0;
 
   background: tokens.$surface;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 0.125rem 0.625rem rgba(15, 23, 42, 0.08);
 }
 
 .image-wrapper img {
@@ -79,8 +80,8 @@
 
 .results-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 16.25rem;
+  gap: 1.25rem;
   align-items: stretch;
 
   flex: 1;
@@ -93,19 +94,19 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .viewer-toolbar span {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: tokens.$text-control;
 }
 
 .viewer-toolbar button {
   @include controls.outlined-button();
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   color: tokens.$text-control;
 }
 
@@ -125,20 +126,20 @@
 .zoom-controls {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.375rem;
 }
 
 .zoom-controls button {
-  @include controls.outlined-button(7px);
+  @include controls.outlined-button(0.4375rem);
   display: grid;
   place-items: center;
 
-  min-width: 32px;
-  height: 32px;
-  padding: 0 10px;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.625rem;
 
   color: tokens.$text-control;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
@@ -152,9 +153,9 @@
 }
 
 .zoom-value {
-  min-width: 45px;
+  min-width: 2.8125rem;
   color: tokens.$text-secondary;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -170,14 +171,49 @@
 }
 
 .image-error {
-  max-width: 420px;
-  padding: 24px;
+  max-width: 26.25rem;
+  padding: 1.5rem;
   text-align: center;
   color: tokens.$danger-text;
 
   p {
     color: tokens.$text-muted;
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.6;
   }
+}
+
+.preview-process-button {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1;
+  padding: 0.625rem 1.125rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: tokens.$primary;
+  color: tokens.$text-on-primary;
+  box-shadow: 0 0.1875rem 0.75rem rgba(15, 23, 42, 0.2);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: tokens.$primary-hover;
+  }
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  &:focus-visible {
+    outline: 0.125rem solid tokens.$focus-ring;
+    outline-offset: 0.1875rem;
+  }
+}
+
+.results-layout.settings-open {
+  grid-template-columns: minmax(0, 1fr) 20rem;
+}
+.panel-controls {
+  display: flex;
+  gap: 0.5rem;
 }

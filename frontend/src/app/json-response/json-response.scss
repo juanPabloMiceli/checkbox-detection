@@ -7,8 +7,8 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid tokens.$border;
-  border-radius: 8px;
+  border: 0.0625rem solid tokens.$border;
+  border-radius: 0.5rem;
   background: tokens.$surface-subtle;
 }
 
@@ -16,18 +16,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid tokens.$border;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 0.0625rem solid tokens.$border;
   color: tokens.$text-muted;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 
 .response-format {
-  padding: 2px 5px;
-  border-radius: 4px;
+  padding: 0.125rem 0.3125rem;
+  border-radius: 0.25rem;
   background: tokens.$surface-muted;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 600;
 }
 
@@ -36,11 +36,11 @@
   flex: 1;
   min-height: 0;
   margin: 0;
-  padding: 12px;
+  padding: 0.75rem;
   overflow: auto;
   color: tokens.$text-secondary;
   font:
-    12px / 1.7 ui-monospace,
+    0.75rem / 1.7 ui-monospace,
     SFMono-Regular,
     Menlo,
     Consolas,
@@ -50,8 +50,8 @@
   scrollbar-color: tokens.$scrollbar-thumb transparent;
 
   &:focus-visible {
-    outline: 2px solid tokens.$focus-ring;
-    outline-offset: -2px;
+    outline: 0.125rem solid tokens.$focus-ring;
+    outline-offset: -0.125rem;
   }
 }
 

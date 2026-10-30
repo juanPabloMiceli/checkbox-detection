@@ -1,25 +1,27 @@
 @if (status() === 'completed') {
-  <div class="detection-stats">
-    <div class="stat-item">
-      <span class="stat-label">Detected</span>
-      <span class="stat-value">{{ totalDetections() }}</span>
-    </div>
-
-    <div class="stat-item stat-item--checked">
-      <span class="stat-label">Checked</span>
-      <span class="stat-value">{{ totalCheckedDetections() }}</span>
-    </div>
-
-    <div class="stat-item stat-item--unchecked">
-      <span class="stat-label">Unchecked</span>
-      <span class="stat-value">{{ totalUncheckedDetections() }}</span>
-    </div>
+<div class="detection-stats">
+  <div class="stat-item">
+    <span class="stat-label">Detected</span>
+    <span class="stat-value">{{ totalDetections() }}</span>
   </div>
+
+  <div class="stat-item stat-item--checked">
+    <span class="stat-label">Checked</span>
+    <span class="stat-value">{{ totalCheckedDetections() }}</span>
+  </div>
+
+  <div class="stat-item stat-item--unchecked">
+    <span class="stat-label">Unchecked</span>
+    <span class="stat-value">{{ totalUncheckedDetections() }}</span>
+  </div>
+</div>
 } @else {
-  <h2>Document preview</h2>
+<h2>Document preview</h2>
 }
 <app-image-viewport
   #viewport
+  [settingsOpen]="settingsOpen()"
+  [processingDisabled]="!settings.valid()"
   [imageUrl]="imageUrl()"
   [detections]="detections()"
   [status]="status()"
@@ -27,18 +29,27 @@
   [showBoundingBoxes]="showBoundingBoxes()"
   (detectionSelected)="selectDetection($event)"
   (selectionCleared)="clearSelection()"
+  (processRequested)="processRequested.emit()"
+  (settingsToggled)="toggleSettings()"
   (annotationsToggled)="toggleBoundingBoxes()"
 >
   @if (status() === 'completed') {
-    <app-detection-results
-      [hidden]="!showBoundingBoxes()"
-      [detections]="detections()"
-      [selectedDetectionIndex]="selectedDetectionIndex()"
-      [showBoundingBoxes]="showBoundingBoxes()"
-      [zoom]="viewport.zoom()"
-      (detectionSelected)="selectDetection($event)"
-      (previousRequested)="previousDetection()"
-      (nextRequested)="nextDetection()"
-    />
+  <app-detection-results
+    [hidden]="settingsOpen() || !showBoundingBoxes()"
+    [detections]="detections()"
+    [selectedDetectionIndex]="selectedDetectionIndex()"
+    [showBoundingBoxes]="showBoundingBoxes()"
+    [zoom]="viewport.zoom()"
+    (detectionSelected)="selectDetection($event)"
+    (previousRequested)="previousDetection()"
+    (nextRequested)="nextDetection()"
+  />
   }
+  <app-detection-settings
+    [visible]="settingsOpen()"
+    [processingDisabled]="status() === 'processing' || viewport.imageError()"
+    (processRequested)="processRequested.emit()"
+    [hidden]="!settingsOpen()"
+    (closed)="toggleSettings()"
+  />
 </app-image-viewport>

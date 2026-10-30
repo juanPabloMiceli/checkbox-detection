@@ -1,0 +1,108 @@
+<aside class="settings-panel" aria-label="Detection settings">
+  <div class="settings-header">
+    <h3>Detection settings</h3>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close detection settings"
+      (click)="closed.emit()"
+    >
+      ✕
+    </button>
+  </div>
+  <p class="settings-note">
+    Choose one or both detectors. Their results are combined. Changes apply on the next processing
+    run.
+  </p>
+  @if (settings.loading()) {
+  <p role="status">Loading defaults…</p>
+  } @else if (settings.loadError(); as error) {
+  <p role="alert" class="error">{{ error }}</p>
+  <button type="button" (click)="settings.load()">Retry loading settings</button>
+  } @else if (settings.definition()) {
+  <div class="settings-fields" (scroll)="hideHelp()">
+    @for (group of groups; track group.name) {
+    <fieldset>
+      <legend>
+        <span>{{ group.name }}</span>
+        @if (group.detector; as detector) {
+        <label class="detector-toggle">
+          <input
+            type="checkbox"
+            role="switch"
+            [attr.aria-label]="'Enable ' + group.name"
+            [checked]="settings.enabled()[detector]"
+            (change)="toggleDetector(detector, $event)"
+          />
+          <span>{{ settings.enabled()[detector] ? 'Enabled' : 'Disabled' }}</span>
+        </label>
+        }
+      </legend>
+      @if (!group.detector || settings.enabled()[group.detector]) {
+      <p class="group-description">{{ group.description }}</p>
+      @for (field of group.fields; track field.key) {
+      <div class="setting-field" [class.inactive]="!settings.isFieldEnabled(field.key)">
+        <div class="setting-label">
+          <label [for]="'setting-' + field.key">{{ field.name }}</label>
+          <span class="help">
+            <button
+              type="button"
+              class="help-button"
+              (mouseenter)="showHelp($event, tooltip)"
+              (mouseleave)="hideHelp()"
+              (focus)="showHelp($event, tooltip)"
+              (blur)="hideHelp()"
+              [attr.aria-label]="'About ' + field.name"
+              [attr.aria-describedby]="'help-' + field.key"
+            >
+              <sup>?</sup>
+            </button>
+            <span
+              #tooltip
+              popover="manual"
+              class="tooltip"
+              role="tooltip"
+              [id]="'help-' + field.key"
+              >{{ field.help }}</span
+            >
+          </span>
+        </div>
+        <div class="input-row">
+          <input
+            type="number"
+            [disabled]="!settings.isFieldEnabled(field.key)"
+            [id]="'setting-' + field.key"
+            [value]="display(field)"
+            [min]="bound(field, 'min')"
+            [max]="bound(field, 'max')"
+            [step]="settings.definition()!.limits[field.key].integer ? 1 : 'any'"
+            required
+            [attr.aria-invalid]="!!settings.errors()[field.key]"
+            [attr.aria-describedby]="settings.errors()[field.key] ? 'error-' + field.key : 'help-' + field.key"
+            (input)="change(field, $event)"
+            (keydown.enter)="processOnEnter($event)"
+          />
+          <span class="unit">{{ field.unit }}</span>
+        </div>
+        @if (settings.errors()[field.key]; as error) {
+        <span class="error" [id]="'error-' + field.key">{{ error }}</span>
+        }
+      </div>
+      } }
+    </fieldset>
+    }
+  </div>
+  <div class="settings-footer">
+    @if (settings.detectorError(); as error) {
+    <p class="error" role="alert">{{ error }}</p>
+    } @if (!settings.enabled().outlineEnabled) {
+    <p class="settings-note">
+      Size matching requires outline detection and is inactive in line-only mode.
+    </p>
+    } @if (!settings.valid() && !settings.detectorError()) {
+    <p class="error" role="status">Fix the highlighted values to enable processing.</p>
+    }
+    <button type="button" (click)="settings.reset()">Reset defaults</button>
+  </div>
+  }
+</aside>

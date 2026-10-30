@@ -17,10 +17,10 @@
       <app-upload-area (filesAdded)="addFiles($event)" />
 
       <app-uploaded-document-list
+        [processingDisabled]="!workspace.settings.valid()"
         [documents]="workspace.documents()"
         [selectedDocumentId]="workspace.selectedDocumentId()"
         (documentSelected)="workspace.selectDocument($event)"
-        (documentProcessed)="workspace.processDocument($event)"
         (documentRemoved)="workspace.removeDocument($event)"
         (processAll)="workspace.processAll()"
       />
@@ -28,33 +28,34 @@
 
     <section class="viewer-panel">
       @if (workspace.selectedDocument(); as document) {
-        <app-document-viewer
-          [imageUrl]="document.imageUrl"
-          [detections]="document.detections"
-          [status]="document.status"
-        />
+      <app-document-viewer
+        [imageUrl]="document.imageUrl"
+        [detections]="document.detections"
+        [status]="document.status"
+        (processRequested)="workspace.processDocument(document.id)"
+      />
       } @else {
-        <div class="empty-viewer">
-          <p>Select a document to preview it.</p>
-        </div>
+      <div class="empty-viewer">
+        <p>Select a document to preview it.</p>
+      </div>
       }
     </section>
   </main>
   @if (toast(); as message) {
-    <div class="toast" role="alert">
-      <div class="toast-content">
-        <strong>{{ message.title }}</strong>
-        <p>{{ message.description }}</p>
-      </div>
-
-      <button
-        type="button"
-        class="toast-close"
-        aria-label="Dismiss notification"
-        (click)="toast.set(null)"
-      >
-        ✕
-      </button>
+  <div class="toast" role="alert">
+    <div class="toast-content">
+      <strong>{{ message.title }}</strong>
+      <p>{{ message.description }}</p>
     </div>
+
+    <button
+      type="button"
+      class="toast-close"
+      aria-label="Dismiss notification"
+      (click)="toast.set(null)"
+    >
+      ✕
+    </button>
+  </div>
   }
 </div>

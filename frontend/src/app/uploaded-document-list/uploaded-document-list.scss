@@ -5,7 +5,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
   flex: 1;
   min-width: 0;
   min-height: 0;
@@ -14,30 +14,31 @@
 
 .documents-list-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0.75rem;
   flex-shrink: 0;
 }
 
 .documents-list-header > span {
   color: tokens.$text-subtle;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
 .process-all-button {
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
 
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 
   background: tokens.$primary;
   color: tokens.$text-on-primary;
 
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
@@ -56,31 +57,33 @@
 .documents-list {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 0.5625rem;
   flex: 1;
 
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
 
-  padding: 2px 4px 8px 1px;
+  padding: 0.125rem 0.25rem 0.5rem 0.0625rem;
 
   scrollbar-width: thin;
   scrollbar-color: tokens.$scrollbar-thumb transparent;
 }
 
 .document-item {
+  position: relative;
+  isolation: isolate;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.625rem;
   flex-shrink: 0;
 
-  padding: 12px;
+  padding: 0.75rem 2.625rem 0.75rem 0.75rem;
 
   background: tokens.$surface;
-  border: 1px solid tokens.$border;
-  border-radius: 11px;
+  border: 0.0625rem solid tokens.$border;
+  border-radius: 0.6875rem;
 
   transition:
     background-color 0.15s ease,
@@ -100,11 +103,11 @@
 /* Main document selection button */
 
 .document-select {
+  outline: none;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.625rem;
 
-  width: 100%;
   min-width: 0;
   padding: 0;
 
@@ -115,21 +118,30 @@
   cursor: pointer;
 }
 
+// Stretch the native preview button across the card's padding and empty space.
+.document-select::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 0.6875rem;
+}
+
 /* Document icon */
 
 .document-icon {
   display: grid;
   place-items: center;
-  flex: 0 0 38px;
+  flex: 0 0 2.375rem;
 
-  width: 38px;
-  height: 38px;
+  width: 2.375rem;
+  height: 2.375rem;
 
-  border-radius: 9px;
+  border-radius: 0.5625rem;
   background: tokens.$surface-muted;
 
   color: tokens.$text-muted;
-  font-size: 23px;
+  font-size: 1.4375rem;
 }
 
 .document-item.selected .document-icon {
@@ -142,7 +154,7 @@
 .document-meta {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 0.3125rem;
   flex: 1;
 
   min-width: 0;
@@ -157,18 +169,25 @@
   white-space: nowrap;
 
   color: tokens.$text-primary;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
 .document-subtitle {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3125rem;
   flex-wrap: wrap;
 
   color: tokens.$text-muted;
-  font-size: 11px;
+  font-size: 0.6875rem;
+}
+
+.document-detection-count {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Status */
@@ -176,25 +195,19 @@
 .document-status {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3125rem;
 
-  color: tokens.$text-muted;
-  font-size: 11px;
   font-weight: 500;
   text-transform: capitalize;
 }
 
 .status-dot {
   flex-shrink: 0;
-  width: 6px;
-  height: 6px;
+  width: 0.375rem;
+  height: 0.375rem;
 
   border-radius: 50%;
   background: currentColor;
-}
-
-.document-status.pending {
-  color: tokens.$text-muted;
 }
 
 .document-status.processing {
@@ -209,21 +222,17 @@
   color: tokens.$danger;
 }
 
-.document-detection-count {
-  color: tokens.$text-muted;
-}
-
 /* Processing errors */
 
 .document-error {
   margin: 0;
-  padding: 8px 10px;
+  padding: 0.5rem 0.625rem;
 
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   background: tokens.$danger-surface;
 
   color: tokens.$danger-text;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
@@ -232,56 +241,27 @@
    DOCUMENT ACTIONS
    ========================================= */
 
-.document-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.document-process-button {
-  @include controls.outlined-button(7px);
-  padding: 7px 12px;
-
-  color: tokens.$text-control;
-
-  font-size: 12px;
-  font-weight: 600;
-
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.document-process-button:hover:not(:disabled) {
-  background: tokens.$surface-muted;
-  border-color: tokens.$border-strong;
-}
-
-.document-process-button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.document-item:not(.selected) .document-process-button:not(:disabled) {
-  background: tokens.$surface-subtle;
-}
-
 .document-remove-button {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  z-index: 2;
   display: grid;
   place-items: center;
 
-  width: 30px;
-  height: 30px;
+  width: 1.875rem;
+  height: 1.875rem;
   padding: 0;
 
-  border: 1px solid transparent;
-  border-radius: 7px;
+  border: 0;
+  border-radius: 0.4375rem;
 
   background: transparent;
-  color: tokens.$text-subtle;
+  color: tokens.$text-control;
 
-  font-size: 16px;
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1;
   cursor: pointer;
 
   transition:
@@ -295,10 +275,9 @@
 }
 
 .document-remove-button:focus-visible,
-.document-process-button:focus-visible,
 .process-all-button:focus-visible {
-  outline: 2px solid tokens.$focus-ring;
-  outline-offset: 2px;
+  outline: 0.125rem solid tokens.$focus-ring;
+  outline-offset: 0.125rem;
 }
 
 /* =========================================
@@ -306,39 +285,42 @@
    ========================================= */
 
 .documents-empty {
-  padding: 24px 12px;
+  padding: 1.5rem 0.75rem;
 
-  border: 1px dashed tokens.$border;
-  border-radius: 10px;
+  border: 0.0625rem dashed tokens.$border;
+  border-radius: 0.625rem;
 
   background: tokens.$surface-subtle;
   text-align: center;
 }
 
 .documents-empty p {
-  margin: 0 0 5px;
+  margin: 0 0 0.3125rem;
 
   color: tokens.$text-secondary;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
 .documents-empty span {
   color: tokens.$text-subtle;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .document-item,
-  .document-process-button,
   .document-remove-button,
   .process-all-button {
     transition: none;
   }
 }
 
-.document-select:focus-visible {
-  outline: 2px solid tokens.$focus-ring;
-  outline-offset: 4px;
-  border-radius: 4px;
+.document-select:focus-visible::after {
+  outline: 0.125rem solid tokens.$focus-ring;
+  outline-offset: -0.125rem;
+}
+
+.process-all-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

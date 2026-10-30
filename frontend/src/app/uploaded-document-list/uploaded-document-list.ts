@@ -8,11 +8,11 @@ import { UploadedDocument } from '../models/uploaded_document.model';
   styleUrl: './uploaded-document-list.scss',
 })
 export class UploadedDocumentList {
+  readonly processingDisabled = input(false);
   readonly documents = input.required<UploadedDocument[]>();
   readonly selectedDocumentId = input.required<number | null>();
 
   readonly documentSelected = output<number>();
-  readonly documentProcessed = output<number>();
   readonly documentRemoved = output<number>();
   readonly processAll = output<void>();
 }

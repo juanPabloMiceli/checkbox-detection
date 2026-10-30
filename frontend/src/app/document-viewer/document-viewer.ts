@@ -1,22 +1,36 @@
-import { Component, computed, effect, input, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Detection } from '../models/detection.model';
 import { UploadedDocument } from '../models/uploaded_document.model';
 import { ImageViewport } from '../image-viewport/image-viewport';
+import { DetectionSettingsPanel } from '../detection-settings/detection-settings';
+import { DetectionSettingsStore } from '../services/detection-settings.service';
 import { DetectionResults } from '../detection-results/detection-results';
 
 @Component({
   selector: 'app-document-viewer',
   standalone: true,
-  imports: [ImageViewport, DetectionResults],
+  imports: [ImageViewport, DetectionResults, DetectionSettingsPanel],
   templateUrl: './document-viewer.html',
   styleUrl: './document-viewer.scss',
 })
 export class DocumentViewer {
+  readonly processRequested = output<void>();
   readonly imageUrl = input.required<string>();
   readonly detections = input.required<Detection[]>();
   readonly status = input.required<UploadedDocument['status']>();
   readonly selectedDetectionIndex = signal<number | null>(null);
+  readonly settings = inject(DetectionSettingsStore);
   readonly showBoundingBoxes = signal(true);
+  readonly settingsOpen = signal(false);
   private readonly viewport = viewChild(ImageViewport);
 
   constructor() {
@@ -49,6 +63,10 @@ export class DocumentViewer {
 
   toggleBoundingBoxes() {
     this.showBoundingBoxes.update((current) => !current);
+  }
+
+  toggleSettings() {
+    this.settingsOpen.update((current) => !current);
   }
 
   nextDetection() {

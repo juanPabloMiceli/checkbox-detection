@@ -1,8 +1,8 @@
 @use 'tokens';
 
 // Only the common neutral button surface; size, text and states stay local.
-@mixin outlined-button($radius: 8px) {
-  border: 1px solid tokens.$border-control;
+@mixin outlined-button($radius: 0.5rem) {
+  border: 0.0625rem solid tokens.$border-control;
   border-radius: $radius;
   background: tokens.$surface;
   cursor: pointer;

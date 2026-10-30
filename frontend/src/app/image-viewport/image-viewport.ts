@@ -95,8 +95,15 @@ export class ImageViewport {
 
     if (!stage || width === 0 || height === 0) return;
 
-    const availableWidth = stage.clientWidth - 32;
-    const availableHeight = stage.clientHeight - 32;
+    const content = this.imageWrapper()?.nativeElement.parentElement;
+    if (!content) return;
+
+    // Read the rendered spacing so Fit also respects the user's font size.
+    const spacing = getComputedStyle(content);
+    const availableWidth =
+      stage.clientWidth - parseFloat(spacing.paddingLeft) - parseFloat(spacing.paddingRight);
+    const availableHeight =
+      stage.clientHeight - parseFloat(spacing.paddingTop) - parseFloat(spacing.paddingBottom);
 
     if (availableWidth <= 0 || availableHeight <= 0) return;
 
@@ -148,6 +155,10 @@ export class ImageViewport {
   selectedDetectionIndex = input.required<number | null>();
   showBoundingBoxes = input.required<boolean>();
 
+  readonly settingsOpen = input(false);
+  readonly processingDisabled = input(false);
+  readonly settingsToggled = output<void>();
+  readonly processRequested = output<void>();
   readonly detectionSelected = output<number>();
   readonly selectionCleared = output<void>();
   readonly annotationsToggled = output<void>();

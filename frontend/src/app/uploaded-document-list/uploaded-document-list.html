@@ -1,111 +1,91 @@
 @if (documents().length > 0) {
-  <div class="documents-list-header">
-    <span>Your documents</span>
+<div class="documents-list-header">
+  <span>Your documents</span>
 
-    <button type="button" class="process-all-button" (click)="processAll.emit()">
-      Process all
-    </button>
-  </div>
+  <button
+    type="button"
+    class="process-all-button"
+    [attr.title]="processingDisabled() ? 'Open Settings to load defaults or correct invalid values.' : null"
+    [disabled]="processingDisabled()"
+    (click)="processAll.emit()"
+  >
+    Process all
+  </button>
+</div>
 }
 
 <div class="documents-list">
   @for (document of documents(); track document.id) {
-    <article class="document-item" [class.selected]="selectedDocumentId() === document.id">
-      <button
-        type="button"
-        class="document-select"
-        [attr.aria-label]="'Preview ' + document.name"
-        [attr.aria-pressed]="selectedDocumentId() === document.id"
-        (click)="documentSelected.emit(document.id)"
-      >
-        <span class="document-icon" aria-hidden="true">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+  <article class="document-item" [class.selected]="selectedDocumentId() === document.id">
+    <button
+      type="button"
+      class="document-select"
+      [attr.aria-label]="'Preview ' + document.name"
+      [attr.aria-pressed]="selectedDocumentId() === document.id"
+      (click)="documentSelected.emit(document.id)"
+    >
+      <span class="document-icon" aria-hidden="true">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="m21 15-5-5L5 21" />
+        </svg>
+      </span>
+
+      <span class="document-meta">
+        <span class="document-name" [title]="document.name"> {{ document.name }} </span>
+
+        <span class="document-subtitle">
+          <span
+            class="document-status"
+            [class.pending]="document.status === 'pending'"
+            [class.processing]="document.status === 'processing'"
+            [class.completed]="document.status === 'completed'"
+            [class.error]="document.status === 'error'"
           >
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <path d="m21 15-5-5L5 21" />
-          </svg>
-        </span>
-
-        <span class="document-meta">
-          <span class="document-name" [title]="document.name">
-            {{ document.name }}
+            <span class="status-dot"></span>
+            {{ document.status }}
           </span>
 
-          <span class="document-subtitle">
-            <span
-              class="document-status"
-              [class.pending]="document.status === 'pending'"
-              [class.processing]="document.status === 'processing'"
-              [class.completed]="document.status === 'completed'"
-              [class.error]="document.status === 'error'"
-            >
-              <span class="status-dot"></span>
-              {{ document.status }}
-            </span>
-
-            @if (document.status === 'completed') {
-              <span class="document-detection-count">
-                · {{ document.detections.length }} checkboxes
-              </span>
-            }
+          @if (document.status === 'completed') {
+          <span class="document-detection-count">
+            · {{ document.detections.length }} checkboxes
           </span>
-        </span>
-      </button>
-
-      @if (document.status === 'error') {
-        <p class="document-error">
-          {{ document.errorMessage ?? 'Processing failed. Please try again.' }}
-        </p>
-      }
-
-      <div class="document-actions">
-        <button
-          type="button"
-          class="document-process-button"
-          [disabled]="document.status === 'processing'"
-          (click)="documentProcessed.emit(document.id)"
-        >
-          @switch (document.status) {
-            @case ('processing') {
-              Processing...
-            }
-            @case ('completed') {
-              Reprocess
-            }
-            @case ('error') {
-              Retry
-            }
-            @default {
-              Process
-            }
           }
-        </button>
+        </span>
+      </span>
+    </button>
 
-        <button
-          type="button"
-          class="document-remove-button"
-          [attr.aria-label]="'Remove ' + document.name"
-          title="Remove document"
-          (click)="documentRemoved.emit(document.id)"
-        >
-          ✕
-        </button>
-      </div>
-    </article>
+    @if (document.status === 'error') {
+    <p class="document-error">
+      {{ document.errorMessage ?? 'Processing failed. Please try again.' }}
+    </p>
+    }
+
+    <button
+      type="button"
+      class="document-remove-button"
+      [attr.aria-label]="'Remove ' + document.name"
+      title="Remove document"
+      (click)="documentRemoved.emit(document.id)"
+    >
+      ✕
+    </button>
+  </article>
   } @empty {
-    <div class="documents-empty">
-      <p>No documents uploaded yet.</p>
-      <span>Choose images above to get started.</span>
-    </div>
+  <div class="documents-empty">
+    <p>No documents uploaded yet.</p>
+    <span>Choose images above to get started.</span>
+  </div>
   }
 </div>
