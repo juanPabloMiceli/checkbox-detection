@@ -1,0 +1,20 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+# Local working notes and EC2 deployment resources are outside the take-home.
+/docs/
+/APPROACH.md
+/deploy/
+/compose.ec2.yaml
+
+# Local native dependencies, executables, and submission archives.
+/.deps/
+/bin/
+/dist/
+/checkbox-detector
+
+# Generated outputs and historical experiments.
+/results/
+
+# Curated input images and testdata/expected are intentionally included.
