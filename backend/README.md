@@ -135,7 +135,9 @@ The workflow waits for that command to finish and reports its output. It uses
 no SSH keys and has no test or post-deployment verification steps.
 
 The workflow uses the `checkbox-backend-github-deploy` AWS role, which trusts this
-repository's `main` branch through GitHub OIDC. Its permissions cover ECR pushes
+repository's `main` branch through GitHub OIDC. Its trust uses the immutable
+owner/repository IDs in the GitHub subject, rather than the older name-only
+format. Its permissions cover ECR pushes
 to `checkbox-detection/backend`, `ecr:GetAuthorizationToken`, `ssm:SendCommand`
 for `AWS-RunShellScript` on instance `i-054db4493fc491324`, and
 `ssm:GetCommandInvocation` to report completion. No GitHub AWS secrets or role
