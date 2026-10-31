@@ -47,7 +47,7 @@ it; processing reports a connection error until it is available.
 The viewer's **Settings** button opens a collapsible right-hand panel, sharing its
 space with the annotation results list. Image annotations remain visible while
 settings are open, so reprocessing updates the boxes alongside the controls. Hover over or focus the question marks for
-help. Twelve numeric controls and individual detector switches cover checked-mark classification, outline and line
+help. Ten numeric controls and individual detector switches cover checked-mark classification, outline and line
 sizes, shape/border requirements, size tolerance and duplicate removal. There are
 no preprocessing controls. Both detectors start enabled; each can be switched off
 independently, but at least one must stay enabled. Controls for disabled detectors

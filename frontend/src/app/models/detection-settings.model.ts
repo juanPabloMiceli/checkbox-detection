@@ -25,6 +25,7 @@ export interface SettingsDefinition {
 }
 export interface SettingField {
   key: SettingKey;
+  pairedKey?: SettingKey;
   name: string;
   help: string;
   unit: '%' | 'px' | 'sides';
@@ -88,31 +89,21 @@ export const SETTING_GROUPS: {
     name: 'Detector 2 · Border lines',
     detector: 'lineEnabled',
     description:
-      'Builds boxes from horizontal and vertical borders, with separate width and height limits.',
+      'Builds boxes from horizontal and vertical borders. Each size limit applies to both width and height.',
     fields: [
       {
         key: 'minWidthPx',
-        name: 'Minimum width',
+        pairedKey: 'minEdgeSeparationPx',
+        name: 'Minimum width & height',
         unit: 'px',
-        help: 'Border-line detector only: minimum horizontal width of an assembled box. This is independent of the outline detector’s minimum width and height.',
+        help: 'Border-line detector only: both width and height must meet this minimum. This does not change the outline detector’s limits.',
       },
       {
         key: 'maxWidthPx',
-        name: 'Maximum width',
+        pairedKey: 'maxEdgeSeparationPx',
+        name: 'Maximum width & height',
         unit: 'px',
-        help: 'Border-line detector only: maximum horizontal width of an assembled box. This is independent of the outline detector’s maximum width and height.',
-      },
-      {
-        key: 'minEdgeSeparationPx',
-        name: 'Minimum height',
-        unit: 'px',
-        help: 'Border-line detector only: minimum vertical distance between the top and bottom borders. Width is controlled separately.',
-      },
-      {
-        key: 'maxEdgeSeparationPx',
-        name: 'Maximum height',
-        unit: 'px',
-        help: 'Border-line detector only: maximum vertical distance between the top and bottom borders. Width is controlled separately.',
+        help: 'Border-line detector only: neither width nor height may exceed this maximum. This does not change the outline detector’s limits.',
       },
     ],
   },

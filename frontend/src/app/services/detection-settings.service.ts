@@ -48,7 +48,6 @@ export class DetectionSettingsStore {
     for (const [minimum, maximum] of [
       ['minSidePx', 'maxSidePx'],
       ['minWidthPx', 'maxWidthPx'],
-      ['minEdgeSeparationPx', 'maxEdgeSeparationPx'],
     ] as const) {
       if (!this.isFieldEnabled(minimum)) continue;
       const min = this.draft()[minimum],
@@ -81,21 +80,8 @@ export class DetectionSettingsStore {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (definition) => {
-          if (
-            typeof definition?.defaults?.outlineEnabled !== 'boolean' ||
-            typeof definition?.defaults?.lineEnabled !== 'boolean' ||
-            !this.fields.every(
-              (field) =>
-                Number.isFinite(definition?.defaults?.[field.key]) &&
-                Number.isFinite(definition?.limits?.[field.key]?.min) &&
-                Number.isFinite(definition?.limits?.[field.key]?.max),
-            )
-          ) {
-            this.loadError.set('The server returned incomplete detection settings.');
-          } else {
-            this.definition.set(definition);
-            this.applyDefaults(definition.defaults);
-          }
+          this.definition.set(definition);
+          this.applyDefaults(definition.defaults);
         },
         error: () => {
           this.loadError.set('Could not load detection settings. Retry to enable processing.');
@@ -133,7 +119,10 @@ export class DetectionSettingsStore {
     if (!defaults || !this.valid()) return null;
     const settings = { ...defaults, ...this.enabled() };
     for (const field of this.fields) {
-      if (this.isFieldEnabled(field.key)) settings[field.key] = this.draft()[field.key] as number;
+      if (!this.isFieldEnabled(field.key)) continue;
+      const value = this.draft()[field.key] as number;
+      settings[field.key] = value;
+      if (field.pairedKey) settings[field.pairedKey] = value;
     }
     return settings;
   }
