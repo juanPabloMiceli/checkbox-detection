@@ -9,7 +9,7 @@ import (
 )
 
 // LoadFile applies an optional JSON object over the defaults.
-// The detector constructor validates the resulting numeric settings.
+// The detector constructor validates settings exposed by the detection API.
 func LoadFile(path string) (Config, error) {
 	if path == "" {
 		return Default(), nil

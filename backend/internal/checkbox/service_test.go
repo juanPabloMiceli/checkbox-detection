@@ -91,7 +91,7 @@ func TestDetectorCopiesConfigAndSupportsIndependentInstances(t *testing.T) {
 
 func TestConstructorRejectsInvalidConfiguration(t *testing.T) {
 	cfg := config.Default()
-	cfg.Interior.MarginDivisor = 0
+	cfg.Contour.MinSidePx = 0
 	if detector, err := New(cfg); err == nil || detector != nil {
 		t.Fatal("invalid config constructed a detector")
 	}

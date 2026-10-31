@@ -26,36 +26,18 @@ func TestDefaultIsValidAndIndependent(t *testing.T) {
 	}
 }
 
-func TestValidationRejectsUnsafeSettings(t *testing.T) {
+func TestValidationRejectsInvalidDetectionSettings(t *testing.T) {
 	for _, test := range []struct {
 		name, field string
 		change      func(*Config)
 	}{
-		{"even blur", "preprocess.blurKernelWidthPx", func(c *Config) { c.Preprocess.BlurKernelWidthPx = 4 }},
-		{"zero blur", "preprocess.blurKernelHeightPx", func(c *Config) { c.Preprocess.BlurKernelHeightPx = 0 }},
-		{"large blur", "preprocess.blurKernelWidthPx", func(c *Config) { c.Preprocess.BlurKernelWidthPx = 513 }},
-		{"small block", "preprocess.thresholdBlockSizePx", func(c *Config) { c.Preprocess.ThresholdBlockSizePx = 1 }},
-		{"negative sigma", "preprocess.blurSigma", func(c *Config) { c.Preprocess.BlurSigmaX = -1 }},
-		{"nan sigma", "preprocess.blurSigmaY", func(c *Config) { c.Preprocess.BlurSigmaY = math.NaN() }},
-		{"infinite threshold", "preprocess.thresholdOffset", func(c *Config) { c.Preprocess.ThresholdOffset = math.Inf(1) }},
-		{"float32 overflow", "preprocess.thresholdOffset", func(c *Config) { c.Preprocess.ThresholdOffset = math.MaxFloat64 }},
-		{"nan fraction", "classification.checkedInkRatio", func(c *Config) { c.Classification.CheckedInkRatio = math.NaN() }},
-		{"negative fraction", "background.darkRatio", func(c *Config) { c.Background.DarkRatio = -0.1 }},
-		{"fraction above one", "line.minSideCoverage", func(c *Config) { c.Line.MinSideCoverage = 1.1 }},
-		{"zero quantile", "background.referenceQuantile", func(c *Config) { c.Background.ReferenceQuantile = 0 }},
-		{"zero dedup", "dedup.finalIoUThreshold", func(c *Config) { c.Dedup.FinalIoUThreshold = 0 }},
-		{"zero divisor", "background.gapDivisor", func(c *Config) { c.Background.GapDivisor = 0 }},
-		{"empty interior", "interior.marginDivisor", func(c *Config) { c.Interior.MarginDivisor = 2 }},
-		{"negative radius", "contour.border.minSearchRadiusPx", func(c *Config) { c.Contour.Border.MinSearchRadiusPx = -1 }},
-		{"empty histogram", "background.sampleBudget", func(c *Config) { c.Background.SampleBudget = 0 }},
-		{"no cluster support", "geometry.minClusterSupport", func(c *Config) { c.Geometry.MinClusterSupport = 0 }},
-		{"invalid side count", "contour.border.minStrongSides", func(c *Config) { c.Contour.Border.MinStrongSides = 5 }},
-		{"reversed contour sizes", "contour.minSidePx", func(c *Config) { c.Contour.MinSidePx = 91 }},
-		{"reversed widths", "line.minWidthPx", func(c *Config) { c.Line.MaxWidthPx = 11 }},
-		{"reversed heights", "line.minEdgeSeparationPx", func(c *Config) { c.Line.MaxEdgeSeparationPx = 11 }},
-		{"weak references", "contour.referenceMinRectangularity", func(c *Config) { c.Contour.ReferenceMinRectangularity = 0.8 }},
-		{"zero line kernel", "line.horizontalKernelLengthPx", func(c *Config) { c.Line.HorizontalKernelLengthPx = 0 }},
-		{"zero pixel limit", "maxImagePixels", func(c *Config) { c.MaxImagePixels = 0 }},
+		{"nan fraction", "checkedInkRatio", func(c *Config) { c.Classification.CheckedInkRatio = math.NaN() }},
+		{"zero dedup", "finalIoUThreshold", func(c *Config) { c.Dedup.FinalIoUThreshold = 0 }},
+		{"invalid side count", "minStrongSides", func(c *Config) { c.Contour.Border.MinStrongSides = 5 }},
+		{"reversed contour sizes", "minSidePx", func(c *Config) { c.Contour.MinSidePx = 91 }},
+		{"reversed widths", "minWidthPx", func(c *Config) { c.Line.MaxWidthPx = 11 }},
+		{"reversed heights", "minEdgeSeparationPx", func(c *Config) { c.Line.MaxEdgeSeparationPx = 11 }},
+		{"shape above reference limit", "minRectangularity", func(c *Config) { c.Contour.MinRectangularity = 0.95 }},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cfg := Default()

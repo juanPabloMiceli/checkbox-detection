@@ -1,4 +1,4 @@
-// Package config defines the detector's defaults and startup validation.
+// Package config defines detector defaults and validates public detection settings.
 package config
 
 // Config contains only values. Copying it gives each detector independent,

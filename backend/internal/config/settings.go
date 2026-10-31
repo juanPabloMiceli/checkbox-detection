@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 )
 
 // DetectionSettings is the supported per-request surface; preprocessing stays private.
@@ -64,29 +63,8 @@ func (c Config) SettingsDefinition() SettingsDefinition {
 // ApplySettings validates overrides against the published bounds and returns a
 // configuration copy. The receiver and its preprocessing settings are unchanged.
 func (c Config) ApplySettings(s DetectionSettings) (Config, error) {
-	// Check the same bounds published to the frontend.
-	values := map[string]float64{
-		"checkedInkRatio":     s.CheckedInkRatio,
-		"minSidePx":           float64(s.MinSidePx),
-		"maxSidePx":           float64(s.MaxSidePx),
-		"matchToleranceRatio": s.MatchToleranceRatio,
-		"minRectangularity":   s.MinRectangularity,
-		"finalIoUThreshold":   s.FinalIoUThreshold,
-		"minWidthPx":          float64(s.MinWidthPx),
-		"maxWidthPx":          float64(s.MaxWidthPx),
-		"minEdgeSeparationPx": float64(s.MinEdgeSeparationPx),
-		"maxEdgeSeparationPx": float64(s.MaxEdgeSeparationPx),
-		"minStrongSides":      float64(s.MinStrongSides),
-		"minCoverage":         s.MinCoverage,
-	}
-	for key, limit := range c.SettingsDefinition().Limits {
-		v := values[key]
-		if limit.ExclusiveMin && v == limit.Min {
-			return Config{}, fmt.Errorf("%s must be greater than %g", key, limit.Min)
-		}
-		if math.IsNaN(v) || math.IsInf(v, 0) || v < limit.Min || v > limit.Max {
-			return Config{}, fmt.Errorf("%s must be between %g and %g", key, limit.Min, limit.Max)
-		}
+	if err := c.validateSettings(s); err != nil {
+		return Config{}, err
 	}
 	c.Detectors = Detectors{OutlineEnabled: s.OutlineEnabled, LineEnabled: s.LineEnabled}
 	c.Classification.CheckedInkRatio = s.CheckedInkRatio
@@ -101,7 +79,7 @@ func (c Config) ApplySettings(s DetectionSettings) (Config, error) {
 	c.Line.MaxEdgeSeparationPx = s.MaxEdgeSeparationPx
 	c.Contour.Border.MinStrongSides = s.MinStrongSides
 	c.Contour.Border.MinCoverage = s.MinCoverage
-	return c, c.Validate()
+	return c, nil
 }
 
 // DecodeSettings merges a partial JSON object over server defaults and validates
