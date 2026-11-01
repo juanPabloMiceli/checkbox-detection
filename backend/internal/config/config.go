@@ -114,7 +114,7 @@ type Dedup struct {
 	FinalIoUThreshold     float64 `json:"finalIoUThreshold"`
 }
 
-// Default returns a fresh copy of the settings used by the frozen fixtures.
+// Default returns a fresh copy of the server detection settings.
 func Default() Config {
 	return Config{
 		Detectors: Detectors{OutlineEnabled: true, LineEnabled: true},

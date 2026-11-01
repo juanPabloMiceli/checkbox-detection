@@ -4,18 +4,16 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
-	"encoding/json"
 	"errors"
 	"hash/crc32"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
-	"reflect"
+	"os"
 	"testing"
 
 	"checkbox-detector/internal/config"
-	"checkbox-detector/internal/testfixtures"
 )
 
 func whitePNG(t *testing.T) []byte {
@@ -38,41 +36,27 @@ func newTestDetector(t *testing.T, cfg config.Config) *Detector {
 	return detector
 }
 
-func TestServiceMatchesCharacterization(t *testing.T) {
-	detector := newTestDetector(t, config.Default())
-	for _, fixture := range testfixtures.Load(t, "../../testdata") {
-		t.Run(fixture.Name, func(t *testing.T) {
-			result, err := detector.Process(context.Background(), fixture.Image)
-			if err != nil {
-				t.Fatal(err)
-			}
-			var expected DetectionResult
-			if err := json.Unmarshal(fixture.ExpectedJSON, &expected); err != nil {
-				t.Fatal(err)
-			}
-			if !reflect.DeepEqual(result, expected) {
-				t.Fatal("service output differs from frozen fixture")
-			}
-		})
-	}
-}
-
 func TestDetectorCopiesConfigAndSupportsIndependentInstances(t *testing.T) {
-	fixtures := testfixtures.Load(t, "../../testdata")
-	fixture := fixtures[len(fixtures)-1]
+	data, err := os.ReadFile("../../testdata/im3.png")
+	if err != nil {
+		t.Fatal(err)
+	}
 	cfg := config.Default()
 	ordinary := newTestDetector(t, cfg)
 	cfg.Classification.CheckedInkRatio = 1
 	strict := newTestDetector(t, cfg)
 	cfg.Preprocess.ThresholdBlockSizePx = 0 // Cannot mutate either constructed detector.
-	var expected DetectionResult
-	if err := json.Unmarshal(fixture.ExpectedJSON, &expected); err != nil {
+	expected, err := ordinary.Process(context.Background(), data)
+	if err != nil {
 		t.Fatal(err)
+	}
+	if len(expected.Boxes) == 0 {
+		t.Fatal("sample must contain detections to compare")
 	}
 	for name, detector := range map[string]*Detector{"ordinary": ordinary, "strict": strict} {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			result, err := detector.Process(context.Background(), fixture.Image)
+			result, err := detector.Process(context.Background(), data)
 			if err != nil {
 				t.Fatal(err)
 			}

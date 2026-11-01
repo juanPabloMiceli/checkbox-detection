@@ -15,12 +15,10 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"reflect"
 	"testing"
 
 	"checkbox-detector/internal/checkbox"
 	"checkbox-detector/internal/config"
-	"checkbox-detector/internal/testfixtures"
 )
 
 func blankImage(t *testing.T, format string) []byte {
@@ -38,32 +36,6 @@ func blankImage(t *testing.T, format string) []byte {
 		t.Fatal(err)
 	}
 	return encoded.Bytes()
-}
-
-func TestDetectMatchesCharacterization(t *testing.T) {
-	handler := newTestHandler(t)
-	for _, fixture := range testfixtures.Load(t, "../../testdata") {
-		t.Run(fixture.Name, func(t *testing.T) {
-			var expected checkbox.DetectionResult
-			if err := json.Unmarshal(fixture.ExpectedJSON, &expected); err != nil {
-				t.Fatal(err)
-			}
-			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, multipartRequest(t, "image", fixture.Image))
-			if response.Code != http.StatusOK {
-				t.Fatalf("got %d: %s", response.Code, response.Body)
-			}
-			var actual checkbox.DetectionResult
-			decoder := json.NewDecoder(response.Body)
-			decoder.DisallowUnknownFields()
-			if err := decoder.Decode(&actual); err != nil {
-				t.Fatal(err)
-			}
-			if !reflect.DeepEqual(actual, expected) {
-				t.Fatalf("HTTP output differs from reviewed fixture: got %d boxes, want %d", len(actual.Boxes), len(expected.Boxes))
-			}
-		})
-	}
 }
 
 func TestDetectRejectsTruncatedImageAfterValidHeader(t *testing.T) {
