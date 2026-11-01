@@ -1,6 +1,7 @@
 # Checkbox Detection
 
 **[Try the live demo](https://checkbox-detection.jpmiceli.com.ar)** ·
+[Watch the 1-minute walkthrough](#walkthrough) ·
 API: `POST https://api.jpmiceli.com.ar/detect`
 
 Try the deployed API from the repository root:
@@ -113,6 +114,12 @@ is served from S3 through CloudFront. GitHub Actions deploys each on relevant
 pushes to `main`; backend images are published to ECR and deployed through SSM.
 
 ## Optional frontend
+
+### Walkthrough
+
+https://github.com/user-attachments/assets/b28e0484-b5e3-4d9f-a039-5f228dd8a16b
+
+### Run locally
 
 The API can be reviewed entirely with curl and backend tests. For visual
 inspection, keep the backend running and open a second terminal at the repository
